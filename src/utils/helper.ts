@@ -142,3 +142,7 @@ export const hasRoles = (guardRoleIds: number[], userRoleIds: number[] = []) => 
 export const formatPrismaTime = (time: string) => {
 	return new Date(`1970-01-01T${time}:00Z`);
 }
+
+export const subMinutes = (date: Date, minutes: number): Date => {
+	return new Date(date.getTime() - minutes * 60 * 1000);
+}

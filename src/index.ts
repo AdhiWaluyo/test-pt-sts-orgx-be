@@ -7,12 +7,18 @@ import authRoutes from "./app/auth/auth.route";
 import regionRoutes from "./app/regions/region.route";
 import memberRoutes from "./app/members/member.route";
 import currentUserRoutes from "./app/current-user/current-user.route";
+import dashboardRoutes from "./app/dashboard/dashboard.route";
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors(
+	{
+		origin: process.env.CORS_ORIGIN?.split(","),
+		credentials: true,
+	}
+));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -33,6 +39,9 @@ app.use("/api/v1/regions", regionRoutes);
 
 // Member Routes
 app.use("/api/v1/members", memberRoutes);
+
+// Dashboard Routes
+app.use("/api/v1/dashboards", dashboardRoutes);
 
 const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, () => {

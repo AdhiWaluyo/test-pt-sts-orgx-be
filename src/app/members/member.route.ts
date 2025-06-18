@@ -3,7 +3,7 @@ import { memberValidation } from './member.validation';
 import memberController from './member.controller';
 
 const memberRoutes = express
-	.Router()
+	.Router();
 
 memberRoutes
 	.route('/')
