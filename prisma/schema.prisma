@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  username    String    @unique @db.VarChar(255)
+  password    String    @db.VarChar(255)
+  roleId      Int       @default(1) @map("role_id")
+  regionId    Int?      @map("region_id")
+  createdById Int?      @map("created_by_id")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  accessTokens AccessToken[]
+  Region       Region?       @relation(fields: [regionId], references: [id])
+
+  @@index([username])
+  @@index([roleId])
+  @@index([regionId])
+  @@index([createdById])
+  @@map("users")
+}
+
+model Region {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  type        Int       @default(1)
+  provinceId  Int?      @map("province_id")
+  cityId      Int?      @map("city_id")
+  districtId  Int?      @map("district_id")
+  createdById Int?      @map("created_by_id")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  // Relation to Member
+  membersProvince  Member[] @relation("Province")
+  membersCity      Member[] @relation("City")
+  membersDistrict  Member[] @relation("District")
+  membersKelurahan Member[] @relation("Village")
+
+  //  Relation to User
+  users User[]
+
+  @@index([provinceId])
+  @@index([cityId])
+  @@index([districtId])
+  @@index([createdById])
+  @@map("regions")
+}
+
+model Role {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  description String?
+  accessLevel Int       @default(1) @map("access_level")
+  createdById Int?      @map("created_by_id")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  @@index([createdById])
+  @@map("roles")
+}
+
+model Member {
+  id    Int    @id @default(autoincrement())
+  nik   String @unique @db.Char(16)
+  name  String @db.VarChar(100)
+  phone String @unique @db.VarChar(20)
+
+  provinceId Int @default(1) @map("province_id")
+  cityId     Int @default(1) @map("city_id")
+  districtId Int @default(1) @map("district_id")
+  villageId  Int @default(1) @map("village_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
+
+  // Relation to Region (Province, City, District, Village)
+  province Region @relation("Province", fields: [provinceId], references: [id])
+  city     Region @relation("City", fields: [cityId], references: [id])
+  district Region @relation("District", fields: [districtId], references: [id])
+  village  Region @relation("Village", fields: [villageId], references: [id])
+
+  @@index([provinceId])
+  @@index([cityId])
+  @@index([districtId])
+  @@index([villageId])
+  @@map("members")
+}
+
+model AccessToken {
+  id        String   @id
+  userId    Int      @map("user_id")
+  revoked   Boolean  @default(false)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  // Relation
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("access_tokens")
+}
