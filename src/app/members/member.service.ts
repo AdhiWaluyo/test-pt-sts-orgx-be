@@ -1,13 +1,13 @@
 import db from "@/utils/db.server";
 import { calculatePagination, calculateTotalPage, isNotEmpty } from "@/utils/helper";
-import { RoleInput } from "./member.type";
+import { MemberInput } from "./member.type";
 import { CurrentUser } from "general.type";
 
 const list = async (params: any) => {
 	const { page, perPage, offset } = calculatePagination(params.page, params.perPage);
 
-	const [roles, totalData] = await Promise.all([
-		db.role.findMany({
+	const [members, totalData] = await Promise.all([
+		db.member.findMany({
 			where: {
 				deletedAt: null,
 			},
@@ -16,13 +16,17 @@ const list = async (params: any) => {
 			select: {
 				id: true,
 				name: true,
-				description: true,
-				accessLevel: true,
+				nik: true,
+				phone: true,
+				provinceId: true,
+				cityId: true,
+				districtId: true,
+				villageId: true,
 				createdAt: true,
 				updatedAt: true,
 			}
 		}),
-		db.role.count(),
+		db.member.count(),
 	]);
 
 	const meta = {
@@ -32,11 +36,11 @@ const list = async (params: any) => {
 		totalData: totalData,
 	}
 
-	return { roles, meta };
+	return { members, meta };
 }
 
 const getOne = async (id: number) => {
-	const role = await db.role.findUnique({
+	const member = await db.member.findUnique({
 		where: {
 			id,
 			deletedAt: null,
@@ -44,38 +48,50 @@ const getOne = async (id: number) => {
 		select: {
 			id: true,
 			name: true,
-			description: true,
+			nik: true,
+			phone: true,
+			provinceId: true,
+			cityId: true,
+			districtId: true,
+			villageId: true,
 			createdAt: true,
 			updatedAt: true,
 		},
 	});
 
-	return role;
+	return member;
 }
 
-const create = async (data: RoleInput, currentUser?: CurrentUser) => {
-	const role = await db.role.create({
+const create = async (data: MemberInput, currentUser?: CurrentUser) => {
+	const member = await db.member.create({
 		data: {
 			name: data.name,
-			description: data.description || null,
-			accessLevel: data.accessLevel,
-			createdById: currentUser?.id,
+			nik: data.nik,
+			phone: data.phone,
+			provinceId: data.provinceId,
+			cityId: data.cityId,
+			districtId: data.districtId,
+			villageId: data.villageId,
 		},
 	});
 
-	return getOne(role.id);
+	return getOne(member.id);
 }
 
-const update = async (id: number, data: RoleInput) => {
-	db.role.update({
+const update = async (id: number, data: MemberInput) => {
+	db.member.update({
 		where: {
 			id,
 			deletedAt: null,
 		},
 		data: {
 			name: data.name,
-			description: data.description || null,
-			accessLevel: data.accessLevel,
+			nik: data.nik,
+			phone: data.phone,
+			provinceId: data.provinceId,
+			cityId: data.cityId,
+			districtId: data.districtId,
+			villageId: data.villageId,
 		},
 	})
 
@@ -83,7 +99,7 @@ const update = async (id: number, data: RoleInput) => {
 }
 
 const remove = async (id: number) => {
-	await db.role.update({
+	await db.member.update({
 		where: {
 			id,
 			deletedAt: null,
@@ -95,7 +111,7 @@ const remove = async (id: number) => {
 };
 
 const isExists = async (id: number): Promise<boolean> => {
-	const role = await db.role.findUnique({
+	const member = await db.member.findUnique({
 		where: {
 			id,
 			deletedAt: null,
@@ -105,10 +121,10 @@ const isExists = async (id: number): Promise<boolean> => {
 		}
 	});
 
-	return isNotEmpty(role);
+	return isNotEmpty(member);
 };
 
-const roleService = {
+const memberService = {
 	list,
 	getOne,
 	create,
@@ -117,4 +133,4 @@ const roleService = {
 	isExists,
 };
 
-export default roleService;
+export default memberService;

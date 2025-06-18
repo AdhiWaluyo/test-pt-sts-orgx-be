@@ -2,10 +2,12 @@ import { body, FieldValidationError, validationResult } from "express-validator"
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import db from "@/utils/db.server";
 import { isNotEmpty } from "@/utils/helper";
+import regionEnum from "@/enums/region.enum";
+import roleEnum from "@/enums/role.enum";
 
 export const updateUserValidation: RequestHandler[] = [
-	// role_id
-	body('role_id')
+	// roleId
+	body('roleId')
 		.notEmpty()
 		.withMessage('Role is required')
 		.bail()
@@ -28,13 +30,15 @@ export const updateUserValidation: RequestHandler[] = [
 			return true
 		}),
 
-	// region_id
-	body('region_id')
+	// regionId
+	body('regionId')
 		.notEmpty()
 		.withMessage('Region is required')
 		.bail()
 		.isInt()
-		.custom(async regionId => {
+		.custom(async (regionId, { req }) => {
+			const roleId = parseInt(req.body.roleId);
+
 			const region = await db.region.findUnique({
 				where: {
 					id: regionId,
@@ -42,11 +46,28 @@ export const updateUserValidation: RequestHandler[] = [
 				},
 				select: {
 					id: true,
+					type: true
 				}
 			});
 
 			if (!region) {
 				throw new Error('Invalid region');
+			}
+
+			if (roleId === roleEnum.PROVINCIAL_ADMIN && region.type !== regionEnum.PROVINCE) {
+				throw new Error('Region is not a province');
+			}
+
+			if (roleId === roleEnum.CITY_ADMIN && region.type !== regionEnum.CITY) {
+				throw new Error('Region is not a city');
+			}
+
+			if (roleId === roleEnum.DISTRICT_ADMIN && region.type !== regionEnum.DISTRICT) {
+				throw new Error('Region is not a district');
+			}
+
+			if (roleId === roleEnum.VILLAGE_ADMIN && region.type !== regionEnum.VILLAGE) {
+				throw new Error('Region is not a village');
 			}
 
 			return true

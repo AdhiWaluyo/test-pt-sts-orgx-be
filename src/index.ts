@@ -4,6 +4,9 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import userRoutes from "./app/users/user.route";
 import authRoutes from "./app/auth/auth.route";
+import regionRoutes from "./app/regions/region.route";
+import memberRoutes from "./app/members/member.route";
+import currentUserRoutes from "./app/current-user/current-user.route";
 
 dotenv.config();
 
@@ -21,6 +24,15 @@ app.use("/api/v1", authRoutes);
 
 // User Routes
 app.use("/api/v1/users", userRoutes);
+
+// Current User Routes
+app.use("/api/v1/me", currentUserRoutes);
+
+// Region Routes
+app.use("/api/v1/regions", regionRoutes);
+
+// Member Routes
+app.use("/api/v1/members", memberRoutes);
 
 const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, () => {

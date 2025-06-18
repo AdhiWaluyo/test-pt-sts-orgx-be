@@ -1,5 +1,10 @@
-export interface RoleInput {
+export interface MemberInput {
 	name: string;
-	description?: string;
+	nik: string;
+	phone: string;
+	provinceId: number;
+	cityId: number;
+	districtId: number;
+	villageId: number;
 	accessLevel?: number;
 }

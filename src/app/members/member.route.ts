@@ -1,20 +1,19 @@
 import express from 'express';
-import { roleValidation } from './role.validation';
-import roleController from './member.controller';
-import { authMiddleware } from '@/middlewares/auth.middleware';
+import { memberValidation } from './member.validation';
+import memberController from './member.controller';
 
-const roleRoutes = express
+const memberRoutes = express
 	.Router()
-	.use(authMiddleware);
 
-roleRoutes
+memberRoutes
 	.route('/')
-	.get(roleController.list);
+	.post(memberValidation, memberController.create)
+	.get(memberController.list);
 
-roleRoutes
+memberRoutes
 	.route('/:id')
-	.get(roleController.getOne)
-	.put(roleValidation, roleController.update)
-	.delete(roleController.remove)
+	.get(memberController.getOne)
+	.patch(memberValidation, memberController.update)
+	.delete(memberController.remove)
 
-export default roleRoutes;
+export default memberRoutes;

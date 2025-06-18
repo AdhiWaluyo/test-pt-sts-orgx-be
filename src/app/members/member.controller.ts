@@ -1,17 +1,17 @@
 import { Response } from "express";
-import roleService from "./member.service";
+import memberService from "./member.service";
 import { messages } from "@/lang";
 import { HttpStatusCode } from "@/enums/http-status-code.enum";
-import { transformRole } from "./member";
+import { transformMember } from "./member.tranformer";
 import { AuthenticatedRequest } from "general.type";
 
 const list = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const { roles, meta } = await roleService.list(req.query);
+		const { members, meta } = await memberService.list(req.query);
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.success,
-			data: roles,
+			data: members,
 			meta,
 		})
 	} catch (error) {
@@ -25,20 +25,20 @@ const list = async (req: AuthenticatedRequest, res: Response) => {
 
 const getOne = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const role = await roleService.getOne(parseInt(req.params.id));
+		const member = await memberService.getOne(parseInt(req.params.id));
 
-		if (!role) {
+		if (!member) {
 			res.status(HttpStatusCode.NotFound).json({
 				message: messages.httpNotFound
 			});
 			return
 		}
 
-		const transformedRole = transformRole(role);
+		const transformedMember = transformMember(member);
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.success,
-			data: transformedRole,
+			data: transformedMember,
 		});
 	} catch (error) {
 		console.log(error);
@@ -51,13 +51,13 @@ const getOne = async (req: AuthenticatedRequest, res: Response) => {
 
 const create = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const role = await roleService.create(req.body, req.user);
+		const member = await memberService.create(req.body, req.user);
 
-		const transformedRole = transformRole(role);
+		const transformedMember = transformMember(member);
 
 		res.status(HttpStatusCode.Created).json({
 			message: messages.dataSaved,
-			data: transformedRole,
+			data: transformedMember,
 		});
 	} catch (error) {
 		console.log(error);
@@ -70,7 +70,7 @@ const create = async (req: AuthenticatedRequest, res: Response) => {
 
 const update = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const isExists = await roleService.isExists(parseInt(req.params.id));
+		const isExists = await memberService.isExists(parseInt(req.params.id));
 
 		if (!isExists) {
 			res.status(HttpStatusCode.NotFound).json({
@@ -79,13 +79,13 @@ const update = async (req: AuthenticatedRequest, res: Response) => {
 			return
 		}
 
-		const role = await roleService.update(parseInt(req.params.id), req.body);
+		const member = await memberService.update(parseInt(req.params.id), req.body);
 
-		const transformedRole = transformRole(role);
+		const transformedMember = transformMember(member);
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.dataSaved,
-			data: transformedRole,
+			data: transformedMember,
 		});
 	} catch (error) {
 		console.log(error);
@@ -98,7 +98,7 @@ const update = async (req: AuthenticatedRequest, res: Response) => {
 
 const remove = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const isExists = await roleService.isExists(parseInt(req.params.id));
+		const isExists = await memberService.isExists(parseInt(req.params.id));
 
 		if (!isExists) {
 			res.status(HttpStatusCode.NotFound).json({
@@ -107,7 +107,7 @@ const remove = async (req: AuthenticatedRequest, res: Response) => {
 			return
 		}
 
-		await roleService.remove(parseInt(req.params.id));
+		await memberService.remove(parseInt(req.params.id));
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.dataDeleted
@@ -121,7 +121,7 @@ const remove = async (req: AuthenticatedRequest, res: Response) => {
 	}
 }
 
-const roleController = {
+const memberController = {
 	list,
 	getOne,
 	create,
@@ -129,4 +129,4 @@ const roleController = {
 	remove,
 }
 
-export default roleController; 
+export default memberController; 

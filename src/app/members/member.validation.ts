@@ -2,17 +2,32 @@ import { body, FieldValidationError, validationResult } from "express-validator"
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import db from "@/utils/db.server";
 import regionEnum from "@/enums/region.enum";
+import { isNotEmpty } from "@/utils/helper";
 
-export const MemberValidation: RequestHandler[] = [
+export const memberValidation: RequestHandler[] = [
 	// Nik 
 	body('nik')
 		.notEmpty().withMessage('NIK is required')
 		.isLength({ min: 16, max: 16 }).withMessage('NIK must be exactly 16 digits')
 		.isNumeric().withMessage('NIK must contain only numbers')
-		.custom(nik => {
+		.custom(async nik => {
 			if (!/^[0-9]{16}$/.test(nik)) {
 				throw new Error('Invalid NIK format');
 			}
+
+			const member = await db.member.findUnique({
+				where: {
+					nik,
+				},
+				select: {
+					id: true,
+				}
+			});
+
+			if (isNotEmpty(member)) {
+				throw new Error('NIK already exists');
+			}
+
 			return true;
 		}),
 
@@ -26,15 +41,29 @@ export const MemberValidation: RequestHandler[] = [
 	body('phone')
 		.notEmpty().withMessage('Phone number is required')
 		.isLength({ min: 10, max: 13 }).withMessage('Phone number must be between 10 and 13 digits')
-		.custom(phone => {
+		.custom(async phone => {
 			if (!/^[0-9]{10,13}$/.test(phone)) {
 				throw new Error('Invalid phone number format');
 			}
+
+			const member = await db.member.findUnique({
+				where: {
+					phone,
+				},
+				select: {
+					id: true,
+				}
+			});
+
+			if (isNotEmpty(member)) {
+				throw new Error('phone already exists');
+			}
+
 			return true;
 		}),
 
-	// province_id
-	body("province_id")
+	// provinceId
+	body("provinceId")
 		.notEmpty()
 		.withMessage("Province is required")
 		.bail()
@@ -58,8 +87,8 @@ export const MemberValidation: RequestHandler[] = [
 			return true;
 		}),
 
-	// city_id
-	body("city_id")
+	// cityId
+	body("cityId")
 		.notEmpty()
 		.withMessage("City is required")
 		.bail()
@@ -83,8 +112,8 @@ export const MemberValidation: RequestHandler[] = [
 			return true;
 		}),
 
-	// district_id
-	body("district_id")
+	// districtId
+	body("districtId")
 		.notEmpty()
 		.withMessage("District is required")
 		.bail()
@@ -109,25 +138,41 @@ export const MemberValidation: RequestHandler[] = [
 		}),
 
 	// village_id
-	body("village_id")
-		.notEmpty()
-		.withMessage("Village is required")
+	body("villageId")
+		.notEmpty().withMessage("Village is required")
 		.bail()
 		.isInt()
-		.custom(async villageId => {
+		.custom(async (villageId, { req }) => {
+			const { districtId, cityId, provinceId } = req.body;
+
 			const village = await db.region.findUnique({
 				where: {
 					id: villageId,
 					type: regionEnum.VILLAGE,
-					deletedAt: null
+					deletedAt: null,
 				},
 				select: {
 					id: true,
+					districtId: true,
+					cityId: true,
+					provinceId: true,
 				}
 			});
 
 			if (!village) {
-				throw new Error('Invalid village');
+				throw new Error("Invalid village");
+			}
+
+			if (village.districtId !== Number(districtId)) {
+				throw new Error("Village does not belong to the selected district");
+			}
+
+			if (village.cityId !== Number(cityId)) {
+				throw new Error("Village does not belong to the selected city");
+			}
+
+			if (village.provinceId !== Number(provinceId)) {
+				throw new Error("Village does not belong to the selected province");
 			}
 
 			return true;

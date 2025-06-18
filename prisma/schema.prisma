@@ -35,16 +35,15 @@ model User {
 }
 
 model Region {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(100)
-  type        Int       @default(1)
-  provinceId  Int?      @map("province_id")
-  cityId      Int?      @map("city_id")
-  districtId  Int?      @map("district_id")
-  createdById Int?      @map("created_by_id")
-  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
-  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
-  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(3)
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(100)
+  type       Int       @default(1)
+  provinceId Int?      @map("province_id")
+  cityId     Int?      @map("city_id")
+  districtId Int?      @map("district_id")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(3)
 
   // Relation to Member
   membersProvince  Member[] @relation("Province")
@@ -58,7 +57,6 @@ model Region {
   @@index([provinceId])
   @@index([cityId])
   @@index([districtId])
-  @@index([createdById])
   @@map("regions")
 }
 

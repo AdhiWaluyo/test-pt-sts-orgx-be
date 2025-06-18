@@ -88,7 +88,6 @@ const getOne = async (id: number) => {
  * @returns {Promise<User>} - The newly created user data.
  */
 const create = async (data: CreateUserInput, currentUser?: CurrentUser) => {
-
 	// Hash password
 	const hashedPassword = await bcrypt.hash(data.password, 12);
 
@@ -110,7 +109,7 @@ const create = async (data: CreateUserInput, currentUser?: CurrentUser) => {
 const update = async (id: number, data: UpdateUserInput) => {
 
 	// Update user
-	db.user.update({
+	await db.user.update({
 		where: {
 			id,
 			deletedAt: null,
@@ -119,7 +118,7 @@ const update = async (id: number, data: UpdateUserInput) => {
 			roleId: data.roleId,
 			regionId: data.regionId,
 		},
-	})
+	});
 
 	return getOne(id);
 }

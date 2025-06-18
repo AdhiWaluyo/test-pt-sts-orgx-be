@@ -3,8 +3,11 @@ import { AuthenticatedRequest } from "general.type";
 import { HttpStatusCode } from "@/enums/http-status-code.enum";
 import { messages } from "@/lang";
 import currentUserService from "@/app/current-user/current-user.service";
-import { hasRoles } from "@/utils/helper";
 
+/**
+ * Role middleware for checking if the user has one of the allowed roles.
+ * @param requiredRoleIds Array of allowed role IDs
+ */
 export const roleMiddleware = (requiredRoleIds: number[]) => {
 	return async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
 		try {
@@ -14,10 +17,14 @@ export const roleMiddleware = (requiredRoleIds: number[]) => {
 				return;
 			}
 
-			const userRoleIds = await currentUserService.getUserRoleIds(userId);
-			const hasAccess = hasRoles(requiredRoleIds, userRoleIds);
+			const user = await currentUserService.getUserById(userId);
 
-			if (!hasAccess) {
+			if (!user || typeof user.roleId !== 'number') {
+				res.status(HttpStatusCode.Forbidden).json({ message: messages.httpForbidden });
+				return;
+			}
+
+			if (!requiredRoleIds.includes(user.roleId)) {
 				res.status(HttpStatusCode.Forbidden).json({ message: messages.httpForbidden });
 				return;
 			}
@@ -26,7 +33,6 @@ export const roleMiddleware = (requiredRoleIds: number[]) => {
 		} catch (err) {
 			console.error("role middleware error:", err);
 			res.status(HttpStatusCode.InternalServerError).json({ message: messages.httpInternalServerError });
-			return;
 		}
 	};
 };

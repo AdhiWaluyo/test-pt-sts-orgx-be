@@ -1,16 +1,11 @@
 export const transformUser = (user: any) => {
 
-	// Get roles
-	const roles = user?.userHasRoles?.map((userHasRole: any) => userHasRole?.role);
-
 	return {
 		id: user.id,
-		name: user.name,
-		email: user.email,
-		phoneNumber: user.phoneNumber,
-		isActive: user.isActive,
+		username: user.username,
+		roleId: user.roleId,
+		regionId: user.regionId,
 		createdAt: user.createdAt,
 		updatedAt: user.updatedAt,
-		roles: roles
 	}
 }

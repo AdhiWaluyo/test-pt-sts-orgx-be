@@ -1,7 +1,9 @@
 import userSeeder from "../src/app/users/user.seeder";
 import roleSeeder from "../src/app/roles/role.seeder";
+import regionSeeder from "../src/app/regions/regions.seeder";
 import db from '../src/utils/db.server';
 async function seed() {
+	await regionSeeder();
 	await userSeeder();
 	await roleSeeder();
 }

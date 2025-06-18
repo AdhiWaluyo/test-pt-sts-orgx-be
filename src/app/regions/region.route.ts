@@ -5,11 +5,23 @@ const regionRoutes = express
 	.Router()
 
 regionRoutes
-	.route('/')
-	.get(regionController.list);
+	.route('/provinces')
+	.get(regionController.listProvinsi);
 
 regionRoutes
-	.route('/:id')
-	.get(regionController.getOne);
+	.route('/provinces/:id')
+	.get(regionController.getOneProvince);
+
+regionRoutes
+	.route('/cities')
+	.get(regionController.listCity);
+
+regionRoutes
+	.route('/districts')
+	.get(regionController.listDistrict);
+
+regionRoutes
+	.route('/villages')
+	.get(regionController.listVillages);
 
 export default regionRoutes;

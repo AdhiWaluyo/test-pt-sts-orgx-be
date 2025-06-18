@@ -1,3 +1,4 @@
+import regionEnum from "@/enums/region.enum";
 import db from "@/utils/db.server";
 import { calculatePagination, calculateTotalPage, isNotEmpty } from "@/utils/helper";
 
@@ -11,8 +12,7 @@ import { calculatePagination, calculateTotalPage, isNotEmpty } from "@/utils/hel
  * @param {number} [params.perPage=15] - number of data per page
  * @returns {Promise<{ regions: Region[], meta: { currentPage: number, perPage: number, totalPage: number, totalData: number } }>}
  */
-const list = async (params: any) => {
-
+const listProvince = async (params: any) => {
 	// Calculate pagination
 	const { page, perPage, offset } = calculatePagination(params.page, params.perPage);
 
@@ -20,6 +20,7 @@ const list = async (params: any) => {
 	const [regions, totalData] = await Promise.all([
 		db.region.findMany({
 			where: {
+				type: regionEnum.PROVINCE,
 				deletedAt: null,
 			},
 			take: perPage,
@@ -35,7 +36,12 @@ const list = async (params: any) => {
 				updatedAt: true,
 			}
 		}),
-		db.region.count(),
+		db.region.count({
+			where: {
+				type: regionEnum.PROVINCE,
+				deletedAt: null,
+			}
+		}),
 	]);
 
 	// Calculate total page
@@ -49,18 +55,65 @@ const list = async (params: any) => {
 	return { regions, meta };
 }
 
+const listByType = async (
+	type: number,
+	params: any,
+	filter: Record<string, number> = {}
+) => {
+	const { page, perPage, offset } = calculatePagination(params.page, params.perPage);
+
+	const [regions, totalData] = await Promise.all([
+		db.region.findMany({
+			where: {
+				type,
+				deletedAt: null,
+				...filter,
+			},
+			take: perPage,
+			skip: offset,
+			select: {
+				id: true,
+				name: true,
+				type: true,
+				provinceId: true,
+				cityId: true,
+				districtId: true,
+				createdAt: true,
+				updatedAt: true,
+			}
+		}),
+		db.region.count({
+			where: {
+				type,
+				deletedAt: null,
+				...filter,
+			}
+		}),
+	]);
+
+	const meta = {
+		currentPage: page,
+		perPage: perPage,
+		totalPage: calculateTotalPage(totalData, perPage),
+		totalData: totalData,
+	};
+
+	return { regions, meta };
+};
+
 /**
  * Get one region by ID.
  *
  * @param {number} id - region ID
  * @returns {Promise<Region>} - region data or null if not found
  */
-const getOne = async (id: number) => {
+const getOneProvince = async (id: number) => {
 
 	// Get region
 	const region = await db.region.findUnique({
 		where: {
 			id,
+			type: regionEnum.PROVINCE,
 			deletedAt: null,
 		},
 		select: {
@@ -102,8 +155,9 @@ const isExists = async (id: number): Promise<boolean> => {
 
 // Export
 const regionService = {
-	list,
-	getOne,
+	listProvince,
+	getOneProvince,
+	listByType,
 	isExists,
 };
 

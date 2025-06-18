@@ -9,9 +9,9 @@ const profile = async (userId: number) => {
 		},
 		select: {
 			id: true,
-			name: true,
-			email: true,
-			phoneNumber: true,
+			username: true,
+			roleId: true,
+			regionId: true,
 			createdAt: true,
 			updatedAt: true,
 		},
@@ -27,56 +27,35 @@ const updateProfile = async (userId: number, data: UpdateProfileInput) => {
 			deletedAt: null,
 		},
 		data: {
-			name: data.name,
-			phoneNumber: data.phoneNumber || null,
+			roleId: data.roleId,
+			regionId: data.regionId
 		},
 	});
 
 	return profile(userId);
 }
 
-const accessRights = async (userId?: number) => {
-	const permissions = await db.permission.findMany({
+async function getUserById(userId: number) {
+	const user = await db.user.findUnique({
 		where: {
-			deletedAt: null,
-			roleHasPermissions: {
-				some: {
-					role: {
-						deletedAt: null,
-						userHasRoles: {
-							some: {
-								userId: userId
-							}
-						}
-					}
-				}
-			}
+			id: userId,
+			deletedAt: null
 		},
 		select: {
-			id: true
-		}
-	});
-
-	return permissions.map(p => p.id);
-}
-
-async function getUserRoleIds(userId: number): Promise<number[]> {
-	const userRoles = await db.userHasRole.findMany({
-		where: { userId },
-		select: {
+			id: true,
 			roleId: true,
+			username: true,
 		},
 	});
 
-	return userRoles.map(ur => ur.roleId);
+	return user;
 }
 
 
 const currentUserService = {
 	profile,
 	updateProfile,
-	accessRights,
-	getUserRoleIds
+	getUserById
 }
 
 export default currentUserService;

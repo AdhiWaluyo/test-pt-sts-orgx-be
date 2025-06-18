@@ -9,19 +9,24 @@ const roleSeeder = async () => {
 				accessLevel: 1,
 			},
 			{
+				name: 'Province Admin',
+				description: 'People who can access data related to their province',
+				accessLevel: 2,
+			},
+			{
 				name: 'City Admin',
 				description: 'People who can access data related to their city',
-				accessLevel: 2,
+				accessLevel: 3,
 			},
 			{
 				name: 'District Admin',
 				description: 'People who can access data related to their district',
-				accessLevel: 3,
+				accessLevel: 4,
 			},
 			{
 				name: 'Village Admin',
 				description: 'People who can access data related to their village',
-				accessLevel: 4,
+				accessLevel: 5,
 			}
 		]
 	});

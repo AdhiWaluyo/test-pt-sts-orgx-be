@@ -12,13 +12,13 @@ const userRoutes = express
 
 userRoutes
 	.route('/')
-	.get(roleMiddleware([roleEnum.ADMIN, roleEnum.USER]), userController.list)
+	.get(roleMiddleware([roleEnum.CENTRAL_ADMIN]), userController.list)
 	.post(createUserValidation, userController.create);
 
 userRoutes
 	.route('/:id')
-	.get(roleMiddleware([roleEnum.ADMIN, roleEnum.USER]), userController.getOne)
-	.patch(roleMiddleware([roleEnum.ADMIN, roleEnum.USER]), updateUserValidation, userController.update)
-	.delete(roleMiddleware([roleEnum.ADMIN, roleEnum.USER]), userController.remove)
+	.get(roleMiddleware([roleEnum.CENTRAL_ADMIN]), userController.getOne)
+	.patch(roleMiddleware([roleEnum.CENTRAL_ADMIN]), updateUserValidation, userController.update)
+	.delete(roleMiddleware([roleEnum.CENTRAL_ADMIN]), userController.remove)
 
 export default userRoutes;
