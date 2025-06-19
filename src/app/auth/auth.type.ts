@@ -15,6 +15,9 @@ export interface LoginInput {
 export interface RegisterInput {
 	name: string;
 	username: string;
-	phoneNumber?: string;
 	password: string;
+	provinceId: number,
+	cityId: number,
+	districtId: number,
+	villageId: number
 }

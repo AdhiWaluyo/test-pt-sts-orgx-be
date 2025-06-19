@@ -18,18 +18,29 @@ model User {
   username    String    @unique @db.VarChar(255)
   password    String    @db.VarChar(255)
   roleId      Int       @default(1) @map("role_id")
-  regionId    Int?      @map("region_id")
+  provinceId  Int?      @map("province_id")
+  cityId      Int?      @map("city_id")
+  districtId  Int?      @map("district_id")
+  villageId   Int?      @map("village_id")
   createdById Int?      @map("created_by_id")
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(3)
 
   accessTokens AccessToken[]
-  Region       Region?       @relation(fields: [regionId], references: [id])
+
+  // Region relations
+  province Region? @relation("UserProvince", fields: [provinceId], references: [id])
+  city     Region? @relation("UserCity", fields: [cityId], references: [id])
+  district Region? @relation("UserDistrict", fields: [districtId], references: [id])
+  village  Region? @relation("UserVillage", fields: [villageId], references: [id])
 
   @@index([username])
   @@index([roleId])
-  @@index([regionId])
+  @@index([provinceId])
+  @@index([cityId])
+  @@index([districtId])
+  @@index([villageId])
   @@index([createdById])
   @@map("users")
 }
@@ -37,7 +48,7 @@ model User {
 model Region {
   id         Int       @id @default(autoincrement())
   name       String    @db.VarChar(100)
-  type       Int       @default(1)
+  type       Int       @default(1) // enum bisa dibuat
   provinceId Int?      @map("province_id")
   cityId     Int?      @map("city_id")
   districtId Int?      @map("district_id")
@@ -45,14 +56,17 @@ model Region {
   updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
   deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(3)
 
-  // Relation to Member
+  // Member relations
   membersProvince  Member[] @relation("Province")
   membersCity      Member[] @relation("City")
   membersDistrict  Member[] @relation("District")
   membersKelurahan Member[] @relation("Village")
 
-  //  Relation to User
-  users User[]
+  // User relations
+  usersProvince User[] @relation("UserProvince")
+  usersCity     User[] @relation("UserCity")
+  usersDistrict User[] @relation("UserDistrict")
+  usersVillage  User[] @relation("UserVillage")
 
   @@index([provinceId])
   @@index([cityId])
@@ -89,7 +103,6 @@ model Member {
   updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
 
-  // Relation to Region (Province, City, District, Village)
   province Region @relation("Province", fields: [provinceId], references: [id])
   city     Region @relation("City", fields: [cityId], references: [id])
   district Region @relation("District", fields: [districtId], references: [id])

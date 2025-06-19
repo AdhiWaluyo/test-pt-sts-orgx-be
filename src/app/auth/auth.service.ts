@@ -56,6 +56,10 @@ const register = async (data: RegisterInput) => {
 		data: {
 			username: data.username,
 			password: hashedPassword,
+			provinceId: data.provinceId,
+			cityId: data.cityId,
+			districtId: data.districtId,
+			villageId: data.villageId,
 		},
 		select: {
 			id: true,

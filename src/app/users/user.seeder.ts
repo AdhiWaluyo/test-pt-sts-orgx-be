@@ -19,25 +19,31 @@ const userSeeder = async () => {
 				username: "adminJabar",
 				password: hashedPassword,
 				roleId: roleEnum.PROVINCIAL_ADMIN,
-				regionId: 2
+				provinceId: 2
 			},
 			{
 				username: "adminJabarBandung",
 				password: hashedPassword,
 				roleId: roleEnum.CITY_ADMIN,
-				regionId: 7
+				provinceId: 2,
+				cityId: 7
 			},
 			{
 				username: "adminJabarBandungCoblong",
 				password: hashedPassword,
 				roleId: roleEnum.DISTRICT_ADMIN,
-				regionId: 12
+				provinceId: 2,
+				cityId: 7,
+				districtId: 12
 			},
 			{
 				username: "adminJabarBandungCoblongDago",
 				password: hashedPassword,
 				roleId: roleEnum.VILLAGE_ADMIN,
-				regionId: 21
+				provinceId: 2,
+				cityId: 7,
+				districtId: 12,
+				villageId: 21
 			},
 		],
 	});

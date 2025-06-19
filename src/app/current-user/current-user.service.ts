@@ -11,7 +11,10 @@ const profile = async (userId: number) => {
 			id: true,
 			username: true,
 			roleId: true,
-			regionId: true,
+			provinceId: true,
+			cityId: true,
+			districtId: true,
+			villageId: true,
 			createdAt: true,
 			updatedAt: true,
 		},
@@ -28,7 +31,10 @@ const updateProfile = async (userId: number, data: UpdateProfileInput) => {
 		},
 		data: {
 			roleId: data.roleId,
-			regionId: data.regionId
+			provinceId: data.provinceId,
+			cityId: data.cityId,
+			districtId: data.districtId,
+			villageId: data.villageId,
 		},
 	});
 

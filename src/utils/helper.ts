@@ -1,3 +1,5 @@
+import roleEnum from "@/enums/role.enum";
+
 export const calculatePagination = (rawPage: string, rawPerPage: string) => {
 	let page = parseInt(rawPage, 10);
 	let perPage = parseInt(rawPerPage, 10);
@@ -145,4 +147,45 @@ export const formatPrismaTime = (time: string) => {
 
 export const subMinutes = (date: Date, minutes: number): Date => {
 	return new Date(date.getTime() - minutes * 60 * 1000);
+}
+
+export function validateRegionByRole(roleId: number, body: any): string | null {
+	const { provinceId, cityId, districtId, villageId } = body;
+
+	switch (roleId) {
+		case roleEnum.PROVINCIAL_ADMIN:
+			if (!provinceId) {
+				return "provinceId is required for provincial admin"
+			};
+			if (cityId || districtId || villageId) {
+				return "Only provinceId should be filled for provincial admin"
+			};
+			break;
+
+		case roleEnum.CITY_ADMIN:
+			if (!provinceId || !cityId) {
+				return "provinceId and cityId are required for city admin"
+			};
+			if (districtId || villageId) {
+				return "Only provinceId and cityId should be filled for city admin"
+			};
+			break;
+
+		case roleEnum.DISTRICT_ADMIN:
+			if (!provinceId || !cityId || !districtId) {
+				return "provinceId, cityId, and districtId are required for district admin"
+			};
+			if (villageId) {
+				return "villageId should not be filled for district admin"
+			};
+			break;
+
+		case roleEnum.VILLAGE_ADMIN:
+			if (!provinceId || !cityId || !districtId || !villageId) {
+				return "All region fields are required for village admin"
+			};
+			break;
+	}
+
+	return null;
 }

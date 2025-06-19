@@ -1,9 +1,8 @@
 import { body, FieldValidationError, validationResult } from "express-validator";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import db from "@/utils/db.server";
-import { isNotEmpty } from "@/utils/helper";
+import { isNotEmpty, validateRegionByRole } from "@/utils/helper";
 import regionEnum from "@/enums/region.enum";
-import roleEnum from "@/enums/role.enum";
 
 export const updateUserValidation: RequestHandler[] = [
 	// roleId
@@ -12,65 +11,153 @@ export const updateUserValidation: RequestHandler[] = [
 		.withMessage('Role is required')
 		.bail()
 		.isInt()
-		.custom(async roleId => {
+		.custom(async (roleId, { req }) => {
 			const role = await db.role.findUnique({
 				where: {
 					id: roleId,
 					deletedAt: null
 				},
 				select: {
-					id: true,
-				}
+					id: true
+				},
 			});
 
 			if (!role) {
-				throw new Error('Invalid role');
-			}
+				throw new Error('Invalid role')
+			};
 
-			return true
+			const err = validateRegionByRole(Number(roleId), req.body);
+			if (err) {
+				throw new Error(err)
+			};
+
+			return true;
 		}),
 
-	// regionId
-	body('regionId')
-		.notEmpty()
-		.withMessage('Region is required')
-		.bail()
+	// provinceId
+	body("provinceId")
+		.optional()
 		.isInt()
-		.custom(async (regionId, { req }) => {
-			const roleId = parseInt(req.body.roleId);
-
-			const region = await db.region.findUnique({
+		.custom(async provinceId => {
+			const province = await db.region.findUnique({
 				where: {
-					id: regionId,
+					id: provinceId,
+					type: regionEnum.PROVINCE,
 					deletedAt: null
 				},
 				select: {
 					id: true,
-					type: true
 				}
 			});
 
-			if (!region) {
-				throw new Error('Invalid region');
+			if (!province) {
+				throw new Error('Invalid province');
 			}
 
-			if (roleId === roleEnum.PROVINCIAL_ADMIN && region.type !== regionEnum.PROVINCE) {
-				throw new Error('Region is not a province');
+			return true;
+		}),
+
+	body("cityId")
+		.optional()
+		.isInt()
+		.custom(async (cityId, { req }) => {
+			const { provinceId } = req.body;
+
+			const city = await db.region.findUnique({
+				where: {
+					id: cityId,
+					type: regionEnum.CITY,
+					deletedAt: null,
+				},
+				select: {
+					id: true,
+					provinceId: true,
+				}
+			});
+
+			if (!city) {
+				throw new Error("Invalid city");
 			}
 
-			if (roleId === roleEnum.CITY_ADMIN && region.type !== regionEnum.CITY) {
-				throw new Error('Region is not a city');
+			if (city.provinceId !== Number(provinceId)) {
+				throw new Error("City does not belong to the selected province");
 			}
 
-			if (roleId === roleEnum.DISTRICT_ADMIN && region.type !== regionEnum.DISTRICT) {
-				throw new Error('Region is not a district');
+			return true;
+		}),
+
+	body("districtId")
+		.optional()
+		.isInt()
+		.custom(async (districtId, { req }) => {
+			const { provinceId, cityId } = req.body;
+
+			const district = await db.region.findUnique({
+				where: {
+					id: districtId,
+					type: regionEnum.DISTRICT,
+					deletedAt: null,
+				},
+				select: {
+					id: true,
+					provinceId: true,
+					cityId: true,
+				}
+			});
+
+			if (!district) {
+				throw new Error("Invalid district");
 			}
 
-			if (roleId === roleEnum.VILLAGE_ADMIN && region.type !== regionEnum.VILLAGE) {
-				throw new Error('Region is not a village');
+			if (district.cityId !== Number(cityId)) {
+				throw new Error("District does not belong to the selected city");
 			}
 
-			return true
+			if (district.provinceId !== Number(provinceId)) {
+				throw new Error("District does not belong to the selected province");
+			}
+
+			return true;
+		}),
+
+	// village_id
+	body("villageId")
+		.optional()
+		.isInt()
+		.custom(async (villageId, { req }) => {
+			const { districtId, cityId, provinceId } = req.body;
+
+			const village = await db.region.findUnique({
+				where: {
+					id: villageId,
+					type: regionEnum.VILLAGE,
+					deletedAt: null,
+				},
+				select: {
+					id: true,
+					districtId: true,
+					cityId: true,
+					provinceId: true,
+				}
+			});
+
+			if (!village) {
+				throw new Error("Invalid village");
+			}
+
+			if (village.districtId !== Number(districtId)) {
+				throw new Error("Village does not belong to the selected district");
+			}
+
+			if (village.cityId !== Number(cityId)) {
+				throw new Error("Village does not belong to the selected city");
+			}
+
+			if (village.provinceId !== Number(provinceId)) {
+				throw new Error("Village does not belong to the selected province");
+			}
+
+			return true;
 		}),
 
 

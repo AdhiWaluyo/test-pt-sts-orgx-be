@@ -31,7 +31,10 @@ const list = async (params: any) => {
 				id: true,
 				username: true,
 				roleId: true,
-				regionId: true,
+				provinceId: true,
+				cityId: true,
+				districtId: true,
+				villageId: true,
 				createdAt: true,
 				updatedAt: true,
 			}
@@ -68,7 +71,10 @@ const getOne = async (id: number) => {
 			id: true,
 			username: true,
 			roleId: true,
-			regionId: true,
+			provinceId: true,
+			cityId: true,
+			districtId: true,
+			villageId: true,
 			createdAt: true,
 			updatedAt: true,
 		},
@@ -97,7 +103,10 @@ const create = async (data: CreateUserInput, currentUser?: CurrentUser) => {
 			username: data.username,
 			password: hashedPassword,
 			roleId: data.roleId,
-			regionId: data.regionId,
+			provinceId: data.provinceId,
+			cityId: data.cityId,
+			districtId: data.districtId,
+			villageId: data.villageId,
 			createdById: currentUser?.id,
 		},
 	});
@@ -116,7 +125,10 @@ const update = async (id: number, data: UpdateUserInput) => {
 		},
 		data: {
 			roleId: data.roleId,
-			regionId: data.regionId,
+			provinceId: data.provinceId,
+			cityId: data.cityId,
+			districtId: data.districtId,
+			villageId: data.villageId,
 		},
 	});
 
