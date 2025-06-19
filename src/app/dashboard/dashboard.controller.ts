@@ -1,11 +1,12 @@
-import { Request, Response } from "express";
+import { AuthenticatedRequest } from "general.type";
+import { Response } from "express";
 import dashboardService from "./dashboard.service";
 import { HttpStatusCode } from "@/enums/http-status-code.enum";
 import { messages } from "@/lang";
 
-const summary = async (req: Request, res: Response) => {
+const summary = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const summaries = await dashboardService.getSummary();
+		const summaries = await dashboardService.getSummary(req.user?.id as number);
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.success,
@@ -20,9 +21,9 @@ const summary = async (req: Request, res: Response) => {
 	}
 };
 
-const chart = async (req: Request, res: Response) => {
+const chart = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const charts = await dashboardService.getChart();
+		const charts = await dashboardService.getChart(req.user?.id as number);
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.success,
