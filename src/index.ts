@@ -8,6 +8,7 @@ import regionRoutes from "./app/regions/region.route";
 import memberRoutes from "./app/members/member.route";
 import currentUserRoutes from "./app/current-user/current-user.route";
 import dashboardRoutes from "./app/dashboard/dashboard.route";
+import recapitulationRoutes from "./app/recapitulation/recapitulation.route";
 
 dotenv.config();
 
@@ -42,6 +43,9 @@ app.use("/api/v1/members", memberRoutes);
 
 // Dashboard Routes
 app.use("/api/v1/dashboards", dashboardRoutes);
+
+// Recapitulation Routes
+app.use("/api/v1/recapitulations", recapitulationRoutes);
 
 const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, () => {
