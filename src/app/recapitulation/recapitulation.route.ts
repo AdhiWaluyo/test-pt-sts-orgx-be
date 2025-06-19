@@ -10,5 +10,9 @@ recapitulationRoutes
 	.route("/")
 	.get(recapitulationController.list);
 
+recapitulationRoutes
+	.route("/export")
+	.get(recapitulationController.exportFile);
+
 
 export default recapitulationRoutes;

@@ -135,7 +135,6 @@ const getWilayahSummaryByUser = async (userId: number, params: any) => {
 	return { data: paginated, meta };
 };
 
-
 const recapitulationService = {
 	getWilayahSummaryByUser
 };
