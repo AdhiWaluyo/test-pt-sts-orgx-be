@@ -19,10 +19,12 @@ const list = async (req: AuthenticatedRequest, res: Response) => {
 		// Get users
 		const { users, meta } = await userService.list(req.query);
 
+		const transformedUser = users.map(transformUser);
+
 		// Respond with 200 Ok
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.success,
-			data: users,
+			data: transformedUser,
 			meta,
 		})
 	} catch (error) {

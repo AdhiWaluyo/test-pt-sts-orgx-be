@@ -37,6 +37,36 @@ const list = async (params: any) => {
 				villageId: true,
 				createdAt: true,
 				updatedAt: true,
+				role: {
+					select: {
+						id: true,
+						name: true,
+					}
+				},
+				province: {
+					select: {
+						id: true,
+						name: true,
+					}
+				},
+				city: {
+					select: {
+						id: true,
+						name: true,
+					}
+				},
+				district: {
+					select: {
+						id: true,
+						name: true,
+					}
+				},
+				village: {
+					select: {
+						id: true,
+						name: true,
+					}
+				}
 			}
 		}),
 		db.user.count(),

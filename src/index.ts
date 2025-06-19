@@ -2,13 +2,13 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import userRoutes from "./app/users/user.route";
 import authRoutes from "./app/auth/auth.route";
 import regionRoutes from "./app/regions/region.route";
 import memberRoutes from "./app/members/member.route";
 import currentUserRoutes from "./app/current-user/current-user.route";
 import dashboardRoutes from "./app/dashboard/dashboard.route";
 import recapitulationRoutes from "./app/recapitulation/recapitulation.route";
+import userRoutes from "./app/users/user.route";
 
 dotenv.config();
 
