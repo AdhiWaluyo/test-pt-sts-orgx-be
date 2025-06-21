@@ -196,10 +196,10 @@ const update = async (id: number, data: UpdateUserInput) => {
 		},
 		data: {
 			roleId: data.roleId,
-			provinceId: data.provinceId,
-			cityId: data.cityId,
-			districtId: data.districtId,
-			villageId: data.villageId,
+			provinceId: data.provinceId ?? null,
+			cityId: data.cityId ?? null,
+			districtId: data.districtId ?? null,
+			villageId: data.villageId ?? null,
 		},
 	});
 

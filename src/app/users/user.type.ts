@@ -1,10 +1,10 @@
 // User type
 export interface UpdateUserInput {
 	roleId: number,
-	provinceId: number,
-	cityId: number,
-	districtId: number,
-	villageId: number
+	provinceId?: number,
+	cityId?: number,
+	districtId?: number,
+	villageId?: number
 }
 
 // Create user type

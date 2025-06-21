@@ -11,7 +11,12 @@ export const updateUserValidation: RequestHandler[] = [
 		.withMessage('Role is required')
 		.bail()
 		.isInt()
+		.bail()
 		.custom(async (roleId, { req }) => {
+			if (!Number.isInteger(roleId)) {
+				throw new Error('roleId must be an integer');
+			}
+
 			const role = await db.role.findUnique({
 				where: {
 					id: roleId,
@@ -36,31 +41,49 @@ export const updateUserValidation: RequestHandler[] = [
 
 	// provinceId
 	body("provinceId")
-		.optional()
+		.optional({ nullable: true })
 		.isInt()
-		.custom(async provinceId => {
+		.bail()
+		.custom(async (provinceId) => {
+			if (provinceId == null) {
+				return true
+			};
+
+			if (!Number.isInteger(provinceId)) {
+				throw new Error('provinceId must be an integer');
+			}
+
 			const province = await db.region.findUnique({
 				where: {
 					id: provinceId,
 					type: regionEnum.PROVINCE,
-					deletedAt: null
+					deletedAt: null,
 				},
 				select: {
 					id: true,
-				}
+				},
 			});
 
 			if (!province) {
-				throw new Error('Invalid province');
+				throw new Error("Invalid province");
 			}
 
 			return true;
 		}),
 
 	body("cityId")
-		.optional()
+		.optional({ nullable: true })
 		.isInt()
+		.bail()
 		.custom(async (cityId, { req }) => {
+			if (cityId == null) {
+				return true
+			};
+
+			if (!Number.isInteger(cityId)) {
+				throw new Error('cityId must be an integer');
+			}
+
 			const { provinceId } = req.body;
 
 			const city = await db.region.findUnique({
@@ -87,9 +110,18 @@ export const updateUserValidation: RequestHandler[] = [
 		}),
 
 	body("districtId")
-		.optional()
+		.optional({ nullable: true })
 		.isInt()
+		.bail()
 		.custom(async (districtId, { req }) => {
+			if (districtId == null) {
+				return true
+			};
+
+			if (!Number.isInteger(districtId)) {
+				throw new Error('districtId must be an integer');
+			}
+
 			const { provinceId, cityId } = req.body;
 
 			const district = await db.region.findUnique({
@@ -122,9 +154,18 @@ export const updateUserValidation: RequestHandler[] = [
 
 	// village_id
 	body("villageId")
-		.optional()
+		.optional({ nullable: true })
 		.isInt()
+		.bail()
 		.custom(async (villageId, { req }) => {
+			if (villageId == null) {
+				return true
+			};
+
+			if (!Number.isInteger(villageId)) {
+				throw new Error('villageId must be an integer');
+			}
+
 			const { districtId, cityId, provinceId } = req.body;
 
 			const village = await db.region.findUnique({
