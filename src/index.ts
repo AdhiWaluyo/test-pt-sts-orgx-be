@@ -9,6 +9,7 @@ import currentUserRoutes from "./app/current-user/current-user.route";
 import dashboardRoutes from "./app/dashboard/dashboard.route";
 import recapitulationRoutes from "./app/recapitulation/recapitulation.route";
 import userRoutes from "./app/users/user.route";
+import relatedDataRoutes from "./app/related-data/related-data.route";
 
 dotenv.config();
 
@@ -46,6 +47,9 @@ app.use("/api/v1/dashboards", dashboardRoutes);
 
 // Recapitulation Routes
 app.use("/api/v1/recapitulations", recapitulationRoutes);
+
+// Related Data
+app.use("/api/v1/related-data", relatedDataRoutes);
 
 const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, () => {

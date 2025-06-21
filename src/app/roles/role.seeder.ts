@@ -27,7 +27,13 @@ const roleSeeder = async () => {
 				name: 'Village Admin',
 				description: 'People who can access data related to their village',
 				accessLevel: 5,
-			}
+			},
+			// // 30 dummy roles
+			// ...Array.from({ length: 30 }, (_, i) => ({
+			// 	name: `Dummy Role ${i + 1}`,
+			// 	description: `This is a dummy role number ${i + 1}`,
+			// 	accessLevel: 10 + i,
+			// }))
 		]
 	});
 }

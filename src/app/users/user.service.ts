@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import db from "@/utils/db.server";
-import { calculatePagination, calculateTotalPage, isNotEmpty } from "@/utils/helper";
+import { calculatePagination, calculateTotalPage, getFullRoleName, isNotEmpty } from "@/utils/helper";
 import { CreateUserInput, UpdateUserInput } from "./user.type";
 import { CurrentUser } from 'general.type';
 
@@ -15,11 +15,8 @@ import { CurrentUser } from 'general.type';
  * @returns {Promise<{ users: User[], meta: { currentPage: number, perPage: number, totalPage: number, totalData: number } }>}
  */
 const list = async (params: any) => {
-
-	// Calculate pagination
 	const { page, perPage, offset } = calculatePagination(params.page, params.perPage);
 
-	// Get users and total data
 	const [users, totalData] = await Promise.all([
 		db.user.findMany({
 			where: {
@@ -72,16 +69,23 @@ const list = async (params: any) => {
 		db.user.count(),
 	]);
 
-	// Calculate total page
+	const usersWithRoleName = users.map((user) => {
+		return {
+			...user,
+			roleName: getFullRoleName(user)
+		};
+	});
+
 	const meta = {
 		currentPage: page,
 		perPage: perPage,
 		totalPage: calculateTotalPage(totalData, perPage),
 		totalData: totalData,
-	}
+	};
 
-	return { users, meta };
-}
+	return { users: usersWithRoleName, meta };
+};
+
 
 /**
  * Get one user by ID.
@@ -107,10 +111,47 @@ const getOne = async (id: number) => {
 			villageId: true,
 			createdAt: true,
 			updatedAt: true,
+			role: {
+				select: {
+					id: true,
+					name: true,
+				}
+			},
+			province: {
+				select: {
+					id: true,
+					name: true,
+				}
+			},
+			city: {
+				select: {
+					id: true,
+					name: true,
+				}
+			},
+			district: {
+				select: {
+					id: true,
+					name: true,
+				}
+			},
+			village: {
+				select: {
+					id: true,
+					name: true,
+				}
+			}
 		},
 	});
 
-	return user;
+	if (!user) {
+		throw new Error('User not found');
+	}
+
+	return {
+		...user,
+		roleName: getFullRoleName(user),
+	};
 }
 
 /**

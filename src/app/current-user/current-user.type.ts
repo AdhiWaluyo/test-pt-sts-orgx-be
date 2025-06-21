@@ -4,5 +4,5 @@ export interface UpdateProfileInput {
 	provinceId: number,
 	cityId: number,
 	districtId: number,
-	villageId: number
+	villageId: number,
 }

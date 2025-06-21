@@ -189,3 +189,38 @@ export function validateRegionByRole(roleId: number, body: any): string | null {
 
 	return null;
 }
+
+/**
+ * Get full role name
+ */
+type Region = { name?: string } | null;
+
+interface UserRoleContext {
+	roleId: number;
+	role: { name: string };
+	province?: Region;
+	city?: Region;
+	district?: Region;
+	village?: Region;
+}
+
+export function getFullRoleName(user: UserRoleContext): string {
+	let regionName = '';
+
+	switch (user.roleId) {
+		case roleEnum.PROVINCIAL_ADMIN:
+			regionName = user.province?.name || '';
+			break;
+		case roleEnum.CITY_ADMIN:
+			regionName = user.city?.name || '';
+			break;
+		case roleEnum.DISTRICT_ADMIN:
+			regionName = user.district?.name || '';
+			break;
+		case roleEnum.VILLAGE_ADMIN:
+			regionName = user.village?.name || '';
+			break;
+	}
+
+	return regionName ? `${user.role.name} of ${regionName}` : user.role.name;
+}

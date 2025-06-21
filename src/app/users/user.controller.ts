@@ -50,16 +50,18 @@ const list = async (req: AuthenticatedRequest, res: Response) => {
 const getOne = async (req: AuthenticatedRequest, res: Response) => {
 	try {
 
-		// Get user
-		const user = await userService.getOne(parseInt(req.params.id));
+		const isExists = await userService.isExists(parseInt(req.params.id));
 
 		// Respond with 200 Ok
-		if (!user) {
+		if (!isExists) {
 			res.status(HttpStatusCode.NotFound).json({
-				message: messages.httpNotFound
+				message: messages.httpNotFound,
 			});
 			return
 		}
+
+		// Get user
+		const user = await userService.getOne(parseInt(req.params.id));
 
 		// Respond with 200 Ok
 		const transformedUser = transformUser(user);
