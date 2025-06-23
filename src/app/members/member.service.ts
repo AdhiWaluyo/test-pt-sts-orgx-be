@@ -64,7 +64,7 @@ const list = async (params: any) => {
 }
 
 const getOne = async (id: number) => {
-	const member = await db.member.findUnique({
+	const member = await db.member.findFirst({
 		where: {
 			id,
 			deletedAt: null,
@@ -127,10 +127,9 @@ const create = async (data: MemberInput, currentUser?: CurrentUser) => {
 }
 
 const update = async (id: number, data: MemberInput) => {
-	db.member.update({
+	await db.member.updateMany({
 		where: {
 			id,
-			deletedAt: null,
 		},
 		data: {
 			name: data.name,
@@ -150,7 +149,6 @@ const remove = async (id: number) => {
 	await db.member.update({
 		where: {
 			id,
-			deletedAt: null,
 		},
 		data: {
 			deletedAt: new Date(),
@@ -159,7 +157,7 @@ const remove = async (id: number) => {
 };
 
 const isExists = async (id: number): Promise<boolean> => {
-	const member = await db.member.findUnique({
+	const member = await db.member.findFirst({
 		where: {
 			id,
 			deletedAt: null,

@@ -41,6 +41,7 @@ export const memberValidation: RequestHandler[] = [
 		.notEmpty()
 		.withMessage('Name is required'),
 
+	// Phone
 	body('phone')
 		.notEmpty().withMessage('Phone number is required')
 		.bail()

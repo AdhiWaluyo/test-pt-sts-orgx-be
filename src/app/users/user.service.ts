@@ -96,7 +96,7 @@ const list = async (params: any) => {
 const getOne = async (id: number) => {
 
 	// Get user
-	const user = await db.user.findUnique({
+	const user = await db.user.findFirst({
 		where: {
 			id,
 			deletedAt: null,
@@ -192,7 +192,6 @@ const update = async (id: number, data: UpdateUserInput) => {
 	await db.user.update({
 		where: {
 			id,
-			deletedAt: null,
 		},
 		data: {
 			roleId: data.roleId,
@@ -216,8 +215,7 @@ const remove = async (id: number) => {
 	// Soft delete user
 	await db.user.update({
 		where: {
-			id,
-			deletedAt: null,
+			id
 		},
 		data: {
 			deletedAt: new Date(),
@@ -234,7 +232,7 @@ const remove = async (id: number) => {
 const isExists = async (id: number): Promise<boolean> => {
 
 	// Check if user exists
-	const user = await db.user.findUnique({
+	const user = await db.user.findFirst({
 		where: {
 			id,
 			deletedAt: null,
