@@ -156,7 +156,7 @@ export const verifyAccessToken = async (token: string) => {
 	const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as JwtPayload;
 
 	// Check if access token exists
-	const accessToken = await db.accessToken.findUnique({
+	const accessToken = await db.accessToken.findFirst({
 		where: {
 			id: decoded.jti,
 			userId: parseInt(decoded.sub as string),
@@ -178,12 +178,33 @@ export const verifyAccessToken = async (token: string) => {
 	return decoded;
 };
 
+/**
+ * Logout / revoke access token
+ * @param {string} id - Token ID to revoke
+ * @returns {Promise<boolean>} - true if success
+ */
+const logout = async (id: string): Promise<boolean> => {
+	const accessToken = await db.accessToken.updateMany({
+		where: {
+			id,
+			revoked: false,
+		},
+		data: {
+			revoked: true,
+		},
+	});
+
+	return accessToken.count > 0;
+};
+
+
 // Export
 const authService = {
 	login,
 	register,
 	generateAccessToken,
 	verifyAccessToken,
+	logout
 }
 
 export default authService;

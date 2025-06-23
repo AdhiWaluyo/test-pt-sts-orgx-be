@@ -3,6 +3,7 @@ import authService from "./auth.service";
 import { HttpStatusCode } from "@/enums/http-status-code.enum";
 import { messages } from "@/lang";
 import { ErrorCode } from "@/enums/erro-code.enum";
+import { AuthenticatedRequest } from "general.type";
 
 /**
  * Handles user login.
@@ -106,10 +107,73 @@ const register = async (req: Request, res: Response) => {
 	}
 }
 
+const logout = async (req: AuthenticatedRequest, res: Response) => {
+	try {
+		const tokenId = req.user?.accessTokenId;
+
+		if (!tokenId) {
+			res.status(401).json({ message: "Invalid token" });
+			return
+		}
+
+		// Logout
+		const success = await authService.logout(tokenId);
+
+		if (success) {
+			res.status(HttpStatusCode.Ok).json({ message: "Success" });
+			return
+		} else {
+			res.status(HttpStatusCode.BadRequest).json({ message: "Logout failed or already logged out" });
+			return
+		}
+	} catch (error) {
+		console.error(error);
+
+		res.status(HttpStatusCode.InternalServerError).json({
+			message: messages.httpInternalServerError,
+		});
+	}
+};
+
+// const logout = async (req: AuthenticatedRequest, res: Response) => {
+// 	try {
+// 		const authHeader = req.headers.authorization;
+// 		const token = authHeader?.split(" ")[1];
+
+// 		if (!token) {
+// 			res.status(401).json({ message: "Missing token" });
+// 			return;
+// 		}
+
+// 		const payload = await authService.verifyAccessToken(token);
+
+// 		if (!payload) {
+// 			res.status(401).json({ message: "Invalid or expired token" });
+// 			return;
+// 		}
+
+// 		const success = await authService.logout(payload.jti as string);
+// 		if (success) {
+// 			res.status(200).json({ message: "Logout successful" });
+// 			return
+// 		} else {
+// 			res.status(400).json({ message: "Logout failed or already logged out" });
+// 			return
+// 		}
+// 	} catch (error) {
+// 		console.error(error);
+// 		res.status(500).json({ message: "Internal server error" });
+// 	}
+// };
+
+
+
+
 // Export
 const authController = {
 	login,
 	register,
+	logout
 }
 
 export default authController;
