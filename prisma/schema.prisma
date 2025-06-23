@@ -22,6 +22,7 @@ model User {
   cityId      Int?      @map("city_id")
   districtId  Int?      @map("district_id")
   villageId   Int?      @map("village_id")
+  isActive    Boolean   @default(true)
   createdById Int?      @map("created_by_id")
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz(3)
@@ -37,6 +38,7 @@ model User {
 
   role Role @relation(fields: [roleId], references: [id])
 
+  @@unique([isActive])
   @@index([username])
   @@index([roleId])
   @@index([provinceId])

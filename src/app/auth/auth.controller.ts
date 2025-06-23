@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import authService from "./auth.service";
 import { HttpStatusCode } from "@/enums/http-status-code.enum";
 import { messages } from "@/lang";
+import { ErrorCode } from "@/enums/erro-code.enum";
 
 /**
  * Handles user login.
@@ -19,18 +20,40 @@ const login = async (req: Request, res: Response) => {
 	try {
 
 		// Get user
-		const user = await authService.login(req.body);
+		const result = await authService.login(req.body);
 
-		// If user is not found, respond with 400 Bad Request
-		if (!user) {
-			res.status(HttpStatusCode.BadRequest).json({
-				message: 'Incorrect username or password'
-			});
+		if (!result.success) {
+			// If user is not found, respond with 400 Bad Request
+			if (result.errorCode === ErrorCode.DATA_NOT_FOUND) {
+				res.status(HttpStatusCode.BadRequest).json({
+					message: 'User not found'
+				});
+				return;
+			}
+
+			// If password is incorrect, respond with 400 Bad Request
+			if (result.errorCode === ErrorCode.INCORRECT_CREDENTIALS) {
+				res.status(HttpStatusCode.BadRequest).json({
+					message: 'Incorrect username or password'
+				});
+				return;
+			}
+
+			// If user is not active, respond with 400 Bad Request
+			if (result.errorCode === ErrorCode.DATA_INACTIVE) {
+				res.status(HttpStatusCode.BadRequest).json({
+					message: 'User is not active'
+				});
+				return;
+			}
+
+			// Respond with 400 Bad Request
+			res.status(HttpStatusCode.BadRequest).json({ message: 'Login failed' });
 			return;
 		}
 
 		// Generate access token
-		const { token, expiresAt } = await authService.generateAccessToken(user);
+		const { token, expiresAt } = await authService.generateAccessToken(result?.user);
 
 		// Respond with 200 Ok
 		res.status(HttpStatusCode.Ok).json({

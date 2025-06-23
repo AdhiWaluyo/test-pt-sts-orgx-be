@@ -205,6 +205,41 @@ const remove = async (req: AuthenticatedRequest, res: Response) => {
 	}
 }
 
+const updateIsActiveStatus = async (req: AuthenticatedRequest, res: Response) => {
+	try {
+
+		// Check if user exists
+		const isExists = await userService.isExists(parseInt(req.params.id));
+
+		// If user does not exist, respond with 404 Not Found
+		if (!isExists) {
+			res.status(HttpStatusCode.NotFound).json({
+				message: messages.httpNotFound,
+			});
+			return
+		}
+
+		// Update user isActive status
+		const user = await userService.updateIsActiveStatus(parseInt(req.params.id), req.body);
+
+		// Transform user
+		const transformedUser = transformUser(user);
+
+		// Respond with 200 Ok
+		res.status(HttpStatusCode.Ok).json({
+			message: messages.dataSaved,
+			data: transformedUser,
+		});
+	} catch (error) {
+		console.log(error);
+
+		// Respond with 500 Internal Server Error
+		res.status(HttpStatusCode.InternalServerError).json({
+			message: messages.httpInternalServerError
+		});
+	}
+}
+
 // Export user controller
 const userController = {
 	list,
@@ -212,6 +247,7 @@ const userController = {
 	create,
 	update,
 	remove,
+	updateIsActiveStatus
 }
 
 export default userController; 

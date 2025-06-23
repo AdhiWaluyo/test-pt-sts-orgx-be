@@ -224,6 +224,23 @@ const remove = async (id: number) => {
 };
 
 /**
+ * Updates a user's isActive status.
+ *
+ * @param {number} id - User ID to update.
+ * @param {boolean} isActive - New isActive status.
+ */
+const updateIsActiveStatus = async (id: number, isActive: boolean) => {
+	await db.user.update({
+		where: {
+			id,
+		},
+		data: {
+			isActive,
+		},
+	});
+};
+
+/**
  * Checks if a user exists by ID.
  *
  * @param {number} id - user ID
@@ -252,7 +269,8 @@ const userService = {
 	create,
 	update,
 	remove,
-	isExists,
+	updateIsActiveStatus,
+	isExists
 };
 
 export default userService;

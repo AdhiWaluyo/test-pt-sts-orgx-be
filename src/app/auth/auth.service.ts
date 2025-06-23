@@ -5,13 +5,22 @@ import db from "@/utils/db.server";
 import { LoginInput, RegisterInput, User } from "./auth.type";
 import { isEmpty } from "@/utils/helper";
 import dayjs from 'dayjs';
+import { ErrorCode } from '@/enums/erro-code.enum';
+
+
+/**
+ * Login result
+ */
+type LoginResult =
+	| { success: true; user: User }
+	| { success: false; errorCode: ErrorCode };
 
 /**
  * Login with username and password
  * @param {LoginInput} data - login data
- * @returns {Promise<User | null>} - user data or null if not found or incorrect password
+ * @returns {Promise<LoginResult>} - user data or null if not found or incorrect password
  */
-const login = async (data: LoginInput) => {
+const login = async (data: LoginInput): Promise<LoginResult> => {
 
 	// Check if user exists
 	const user = await db.user.findFirst({
@@ -23,12 +32,24 @@ const login = async (data: LoginInput) => {
 			id: true,
 			username: true,
 			password: true,
+			isActive: true
 		}
 	});
 
 	// If user not found, return null
 	if (isEmpty(user)) {
-		return null;
+		return {
+			success: false,
+			errorCode: ErrorCode.DATA_NOT_FOUND,
+		};
+	}
+
+	// If user is not active, return null
+	if (!user?.isActive) {
+		return {
+			success: false,
+			errorCode: ErrorCode.DATA_INACTIVE,
+		};
 	}
 
 	// Check if password is correct
@@ -36,10 +57,13 @@ const login = async (data: LoginInput) => {
 
 	// If password is incorrect, return null
 	if (!passwordMatch) {
-		return null;
+		return {
+			success: false,
+			errorCode: ErrorCode.INCORRECT_CREDENTIALS,
+		};
 	}
 
-	return user;
+	return { success: true, user };
 }
 
 /**

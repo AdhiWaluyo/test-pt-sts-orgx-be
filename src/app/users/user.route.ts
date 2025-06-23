@@ -19,6 +19,13 @@ userRoutes
 	.route('/:id')
 	.get(roleMiddleware([roleEnum.CENTRAL_ADMIN]), userController.getOne)
 	.patch(roleMiddleware([roleEnum.CENTRAL_ADMIN]), updateUserValidation, userController.update)
-	.delete(roleMiddleware([roleEnum.CENTRAL_ADMIN]), userController.remove)
+	.delete(roleMiddleware([roleEnum.CENTRAL_ADMIN]), userController.remove);
+
+userRoutes
+	.patch(
+		'/:id/active-status',
+		roleMiddleware([roleEnum.CENTRAL_ADMIN]),
+		userController.updateIsActiveStatus
+	);
 
 export default userRoutes;
