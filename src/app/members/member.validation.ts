@@ -39,31 +39,76 @@ export const memberValidation: RequestHandler[] = [
 		.withMessage('Name is required'),
 
 	// phone 
+	// body('phone')
+	// 	.notEmpty().withMessage('Phone number is required')
+	// 	.bail()
+	// 	.isLength({ min: 10, max: 13 }).withMessage('Phone number must be between 10 and 13 digits')
+	// 	.custom(async phone => {
+	// 		if (!/^[0-9]{10,13}$/.test(phone)) {
+	// 			throw new Error('Invalid phone number format');
+	// 		}
+
+	// 		const member = await db.member.findFirst({
+	// 			where: {
+	// 				phone,
+	// 				deletedAt: null
+	// 			},
+	// 			select: {
+	// 				id: true,
+	// 			}
+	// 		});
+
+	// 		if (isNotEmpty(member)) {
+	// 			throw new Error('phone already exists');
+	// 		}
+
+	// 		return true;
+	// 	}),
+
 	body('phone')
 		.notEmpty().withMessage('Phone number is required')
 		.bail()
-		.isLength({ min: 10, max: 13 }).withMessage('Phone number must be between 10 and 13 digits')
-		.custom(async phone => {
-			if (!/^[0-9]{10,13}$/.test(phone)) {
-				throw new Error('Invalid phone number format');
+		.custom((phone) => {
+			if (!phone.startsWith('+')) {
+				throw new Error('Phone must start with +');
 			}
-
+			return true;
+		})
+		.bail()
+		.custom((phone) => {
+			const digits = phone.slice(1);
+			if (!/^\d+$/.test(digits)) {
+				throw new Error('Phone must contain only digits after +');
+			}
+			return true;
+		})
+		.bail()
+		.custom((phone) => {
+			const digits = phone.slice(1);
+			if (digits.length < 8 || digits.length > 15) {
+				throw new Error('Phone must have 8 to 15 digits after +');
+			}
+			return true;
+		})
+		.bail()
+		.custom(async (phone) => {
 			const member = await db.member.findFirst({
 				where: {
 					phone,
 					deletedAt: null
 				},
 				select: {
-					id: true,
+					id: true
 				}
 			});
 
-			if (isNotEmpty(member)) {
-				throw new Error('phone already exists');
+			if (member) {
+				throw new Error('Phone number already exists');
 			}
 
 			return true;
 		}),
+
 
 	// provinceId
 	body("provinceId")
