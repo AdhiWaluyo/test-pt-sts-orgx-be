@@ -10,7 +10,9 @@ export const memberValidation: RequestHandler[] = [
 		.notEmpty().withMessage('NIK is required')
 		.isLength({ min: 16, max: 16 }).withMessage('NIK must be exactly 16 digits')
 		.isNumeric().withMessage('NIK must contain only numbers')
-		.custom(async nik => {
+		.custom(async (nik, { req }) => {
+			const id = req.params?.id;
+
 			if (!/^[0-9]{16}$/.test(nik)) {
 				throw new Error('Invalid NIK format');
 			}
@@ -18,7 +20,8 @@ export const memberValidation: RequestHandler[] = [
 			const member = await db.member.findFirst({
 				where: {
 					nik,
-					deletedAt: null
+					deletedAt: null,
+					...(id ? { NOT: { id: Number(id) } } : {})
 				},
 				select: {
 					id: true,
@@ -37,33 +40,6 @@ export const memberValidation: RequestHandler[] = [
 		.trim()
 		.notEmpty()
 		.withMessage('Name is required'),
-
-	// phone 
-	// body('phone')
-	// 	.notEmpty().withMessage('Phone number is required')
-	// 	.bail()
-	// 	.isLength({ min: 10, max: 13 }).withMessage('Phone number must be between 10 and 13 digits')
-	// 	.custom(async phone => {
-	// 		if (!/^[0-9]{10,13}$/.test(phone)) {
-	// 			throw new Error('Invalid phone number format');
-	// 		}
-
-	// 		const member = await db.member.findFirst({
-	// 			where: {
-	// 				phone,
-	// 				deletedAt: null
-	// 			},
-	// 			select: {
-	// 				id: true,
-	// 			}
-	// 		});
-
-	// 		if (isNotEmpty(member)) {
-	// 			throw new Error('phone already exists');
-	// 		}
-
-	// 		return true;
-	// 	}),
 
 	body('phone')
 		.notEmpty().withMessage('Phone number is required')
@@ -91,11 +67,14 @@ export const memberValidation: RequestHandler[] = [
 			return true;
 		})
 		.bail()
-		.custom(async (phone) => {
+		.custom(async (phone, { req }) => {
+			const id = req.params?.id;
+
 			const member = await db.member.findFirst({
 				where: {
 					phone,
-					deletedAt: null
+					deletedAt: null,
+					...(id ? { NOT: { id: Number(id) } } : {})
 				},
 				select: {
 					id: true
