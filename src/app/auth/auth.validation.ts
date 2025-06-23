@@ -68,9 +68,10 @@ export const registerValidation = [
 		.bail()
 		.custom(async value => {
 			// Check if username already exists
-			const user = await db.user.findUnique({
+			const user = await db.user.findFirst({
 				where: {
-					username: value
+					username: value,
+					deletedAt: null
 				},
 				select: {
 					id: true
@@ -100,7 +101,7 @@ export const registerValidation = [
 		.bail()
 		.isInt()
 		.custom(async (roleId, { req }) => {
-			const role = await db.role.findUnique({
+			const role = await db.role.findFirst({
 				where: {
 					id: roleId,
 					deletedAt: null
@@ -127,7 +128,7 @@ export const registerValidation = [
 		.optional()
 		.isInt()
 		.custom(async provinceId => {
-			const province = await db.region.findUnique({
+			const province = await db.region.findFirst({
 				where: {
 					id: provinceId,
 					type: regionEnum.PROVINCE,
@@ -151,7 +152,7 @@ export const registerValidation = [
 		.custom(async (cityId, { req }) => {
 			const { provinceId } = req.body;
 
-			const city = await db.region.findUnique({
+			const city = await db.region.findFirst({
 				where: {
 					id: cityId,
 					type: regionEnum.CITY,
@@ -180,7 +181,7 @@ export const registerValidation = [
 		.custom(async (districtId, { req }) => {
 			const { provinceId, cityId } = req.body;
 
-			const district = await db.region.findUnique({
+			const district = await db.region.findFirst({
 				where: {
 					id: districtId,
 					type: regionEnum.DISTRICT,
@@ -215,7 +216,7 @@ export const registerValidation = [
 		.custom(async (villageId, { req }) => {
 			const { districtId, cityId, provinceId } = req.body;
 
-			const village = await db.region.findUnique({
+			const village = await db.region.findFirst({
 				where: {
 					id: villageId,
 					type: regionEnum.VILLAGE,
@@ -257,7 +258,7 @@ export const registerValidation = [
 	// 	.custom(async (regionId, { req }) => {
 	// 		const roleId = parseInt(req.body.roleId);
 
-	// 		const region = await db.region.findUnique({
+	// 		const region = await db.region.findFirst({
 	// 			where: {
 	// 				id: regionId,
 	// 				deletedAt: null

@@ -15,9 +15,10 @@ export const memberValidation: RequestHandler[] = [
 				throw new Error('Invalid NIK format');
 			}
 
-			const member = await db.member.findUnique({
+			const member = await db.member.findFirst({
 				where: {
 					nik,
+					deletedAt: null
 				},
 				select: {
 					id: true,
@@ -40,15 +41,17 @@ export const memberValidation: RequestHandler[] = [
 	// phone 
 	body('phone')
 		.notEmpty().withMessage('Phone number is required')
+		.bail()
 		.isLength({ min: 10, max: 13 }).withMessage('Phone number must be between 10 and 13 digits')
 		.custom(async phone => {
 			if (!/^[0-9]{10,13}$/.test(phone)) {
 				throw new Error('Invalid phone number format');
 			}
 
-			const member = await db.member.findUnique({
+			const member = await db.member.findFirst({
 				where: {
 					phone,
+					deletedAt: null
 				},
 				select: {
 					id: true,
@@ -69,7 +72,7 @@ export const memberValidation: RequestHandler[] = [
 		.bail()
 		.isInt()
 		.custom(async provinceId => {
-			const province = await db.region.findUnique({
+			const province = await db.region.findFirst({
 				where: {
 					id: provinceId,
 					type: regionEnum.PROVINCE,
@@ -94,7 +97,7 @@ export const memberValidation: RequestHandler[] = [
 		.bail()
 		.isInt()
 		.custom(async cityId => {
-			const city = await db.region.findUnique({
+			const city = await db.region.findFirst({
 				where: {
 					id: cityId,
 					type: regionEnum.CITY,
@@ -119,7 +122,7 @@ export const memberValidation: RequestHandler[] = [
 		.bail()
 		.isInt()
 		.custom(async districtId => {
-			const district = await db.region.findUnique({
+			const district = await db.region.findFirst({
 				where: {
 					id: districtId,
 					type: regionEnum.DISTRICT,
@@ -145,7 +148,7 @@ export const memberValidation: RequestHandler[] = [
 		.custom(async (villageId, { req }) => {
 			const { districtId, cityId, provinceId } = req.body;
 
-			const village = await db.region.findUnique({
+			const village = await db.region.findFirst({
 				where: {
 					id: villageId,
 					type: regionEnum.VILLAGE,

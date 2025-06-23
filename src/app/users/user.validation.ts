@@ -17,7 +17,7 @@ export const updateUserValidation: RequestHandler[] = [
 				throw new Error('roleId must be an integer');
 			}
 
-			const role = await db.role.findUnique({
+			const role = await db.role.findFirst({
 				where: {
 					id: roleId,
 					deletedAt: null
@@ -53,7 +53,7 @@ export const updateUserValidation: RequestHandler[] = [
 				throw new Error('provinceId must be an integer');
 			}
 
-			const province = await db.region.findUnique({
+			const province = await db.region.findFirst({
 				where: {
 					id: provinceId,
 					type: regionEnum.PROVINCE,
@@ -86,7 +86,7 @@ export const updateUserValidation: RequestHandler[] = [
 
 			const { provinceId } = req.body;
 
-			const city = await db.region.findUnique({
+			const city = await db.region.findFirst({
 				where: {
 					id: cityId,
 					type: regionEnum.CITY,
@@ -124,7 +124,7 @@ export const updateUserValidation: RequestHandler[] = [
 
 			const { provinceId, cityId } = req.body;
 
-			const district = await db.region.findUnique({
+			const district = await db.region.findFirst({
 				where: {
 					id: districtId,
 					type: regionEnum.DISTRICT,
@@ -168,7 +168,7 @@ export const updateUserValidation: RequestHandler[] = [
 
 			const { districtId, cityId, provinceId } = req.body;
 
-			const village = await db.region.findUnique({
+			const village = await db.region.findFirst({
 				where: {
 					id: villageId,
 					type: regionEnum.VILLAGE,
@@ -241,9 +241,10 @@ export const createUserValidation: RequestHandler[] = [
 		.custom(async (value, { req }) => {
 
 			// Check if email already exists
-			const user = await db.user.findUnique({
+			const user = await db.user.findFirst({
 				where: {
-					username: value
+					username: value,
+					deletedAt: null
 				},
 				select: {
 					id: true,

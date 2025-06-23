@@ -24,6 +24,30 @@ const list = async (params: any) => {
 				villageId: true,
 				createdAt: true,
 				updatedAt: true,
+				province: {
+					select: {
+						id: true,
+						name: true,
+					}
+				},
+				city: {
+					select: {
+						id: true,
+						name: true,
+					}
+				},
+				district: {
+					select: {
+						id: true,
+						name: true,
+					}
+				},
+				village: {
+					select: {
+						id: true,
+						name: true,
+					}
+				},
 			}
 		}),
 		db.member.count(),
@@ -56,6 +80,30 @@ const getOne = async (id: number) => {
 			villageId: true,
 			createdAt: true,
 			updatedAt: true,
+			province: {
+				select: {
+					id: true,
+					name: true,
+				}
+			},
+			city: {
+				select: {
+					id: true,
+					name: true,
+				}
+			},
+			district: {
+				select: {
+					id: true,
+					name: true,
+				}
+			},
+			village: {
+				select: {
+					id: true,
+					name: true,
+				}
+			},
 		},
 	});
 

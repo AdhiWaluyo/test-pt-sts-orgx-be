@@ -14,9 +14,10 @@ import dayjs from 'dayjs';
 const login = async (data: LoginInput) => {
 
 	// Check if user exists
-	const user = await db.user.findUnique({
+	const user = await db.user.findFirst({
 		where: {
-			username: data.username
+			username: data.username,
+			deletedAt: null
 		},
 		select: {
 			id: true,

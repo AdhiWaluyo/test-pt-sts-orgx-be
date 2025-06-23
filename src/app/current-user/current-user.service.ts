@@ -3,7 +3,7 @@ import { UpdateProfileInput } from "./current-user.type";
 import { getFullRoleName } from "@/utils/helper";
 
 const profile = async (userId: number) => {
-	const user = await db.user.findUnique({
+	const user = await db.user.findFirst({
 		where: {
 			id: userId,
 			deletedAt: null,
@@ -80,7 +80,7 @@ const updateProfile = async (userId: number, data: UpdateProfileInput) => {
 }
 
 async function getUserById(userId: number) {
-	const user = await db.user.findUnique({
+	const user = await db.user.findFirst({
 		where: {
 			id: userId,
 			deletedAt: null

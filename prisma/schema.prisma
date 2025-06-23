@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id          Int       @id @default(autoincrement())
-  username    String    @unique @db.VarChar(255)
+  username    String    @db.VarChar(255)
   password    String    @db.VarChar(255)
   roleId      Int       @default(1) @map("role_id")
   provinceId  Int?      @map("province_id")
@@ -93,9 +93,9 @@ model Role {
 
 model Member {
   id    Int    @id @default(autoincrement())
-  nik   String @unique @db.Char(16)
+  nik   String @db.Char(16)
   name  String @db.VarChar(100)
-  phone String @unique @db.VarChar(20)
+  phone String @db.VarChar(20)
 
   provinceId Int @default(1) @map("province_id")
   cityId     Int @default(1) @map("city_id")

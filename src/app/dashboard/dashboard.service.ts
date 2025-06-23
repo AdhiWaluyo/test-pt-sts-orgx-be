@@ -5,8 +5,11 @@ const getSummary = async (userId: number) => {
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
 
-	const user = await db.user.findUnique({
-		where: { id: userId, deletedAt: null },
+	const user = await db.user.findFirst({
+		where: {
+			id: userId,
+			deletedAt: null
+		},
 		select: {
 			id: true,
 			roleId: true,
@@ -67,8 +70,11 @@ const getSummary = async (userId: number) => {
 const getChart = async (userId: number) => {
 	const start = subMinutes(new Date(), 30);
 
-	const user = await db.user.findUnique({
-		where: { id: userId, deletedAt: null },
+	const user = await db.user.findFirst({
+		where: {
+			id: userId,
+			deletedAt: null
+		},
 		select: {
 			provinceId: true,
 			cityId: true,
