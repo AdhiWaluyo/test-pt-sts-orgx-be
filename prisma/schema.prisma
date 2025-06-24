@@ -38,7 +38,7 @@ model User {
 
   role Role @relation(fields: [roleId], references: [id])
 
-  @@unique([isActive])
+  @@index([isActive])
   @@index([username])
   @@index([roleId])
   @@index([provinceId])

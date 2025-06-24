@@ -12,7 +12,7 @@ import { calculatePagination, calculateTotalPage, isNotEmpty } from "@/utils/hel
  * @param {number} [params.perPage=15] - number of data per page
  * @returns {Promise<{ regions: Region[], meta: { currentPage: number, perPage: number, totalPage: number, totalData: number } }>}
  */
-const listProvince = async (params: any) => {
+const listProvince = async (params?: any) => {
 	// Calculate pagination
 	const { page, perPage, offset } = calculatePagination(params.page, params.perPage);
 
@@ -57,7 +57,7 @@ const listProvince = async (params: any) => {
 
 const listByType = async (
 	type: number,
-	params: any,
+	params?: any,
 	filter: Record<string, number> = {}
 ) => {
 	const { page, perPage, offset } = calculatePagination(params.page, params.perPage);
