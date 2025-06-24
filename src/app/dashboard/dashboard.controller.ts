@@ -4,9 +4,9 @@ import dashboardService from "./dashboard.service";
 import { HttpStatusCode } from "@/enums/http-status-code.enum";
 import { messages } from "@/lang";
 
-const summary = async (req: AuthenticatedRequest, res: Response) => {
+const summaryMemberToday = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const summaries = await dashboardService.getSummary(req.user?.id as number);
+		const summaries = await dashboardService.getTotalMemberToday(req.user?.id as number);
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.success,
@@ -23,7 +23,7 @@ const summary = async (req: AuthenticatedRequest, res: Response) => {
 
 const chart = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const charts = await dashboardService.getChart(req.user?.id as number);
+		const charts = await dashboardService.getRegistrationPer5MinChart(req.user?.id as number);
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.success,
@@ -37,9 +37,26 @@ const chart = async (req: AuthenticatedRequest, res: Response) => {
 	}
 };
 
+const totalAllMember = async (req: AuthenticatedRequest, res: Response) => {
+	try {
+		const totalMember = await dashboardService.getTotalAllMember(req.user?.id as number);
+
+		res.status(HttpStatusCode.Ok).json({
+			message: messages.success,
+			data: totalMember
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(HttpStatusCode.InternalServerError).json({
+			message: messages.httpInternalServerError
+		});
+	}
+};
+
 const dashboardController = {
-	summary,
+	summaryMemberToday,
 	chart,
+	totalAllMember
 };
 
 export default dashboardController;

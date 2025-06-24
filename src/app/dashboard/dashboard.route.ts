@@ -7,11 +7,16 @@ const dashboardRoutes = express
 	.use(authMiddleware);
 
 dashboardRoutes
-	.route("/summaries")
-	.get(dashboardController.summary);
+	.route("/summaries/today")
+	.get(dashboardController.summaryMemberToday);
 
 dashboardRoutes
 	.route("/charts")
 	.get(dashboardController.chart);
+
+
+dashboardRoutes
+	.route("/total-member")
+	.get(dashboardController.totalAllMember);
 
 export default dashboardRoutes;

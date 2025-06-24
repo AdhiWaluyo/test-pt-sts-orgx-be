@@ -1,7 +1,7 @@
 import db from "@/utils/db.server";
 import { subMinutes } from "@/utils/helper";
 
-const getSummary = async (userId: number) => {
+const getTotalMemberToday = async (userId: number) => {
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
 
@@ -67,7 +67,7 @@ const getSummary = async (userId: number) => {
 	return { totalAll, totalToday };
 };
 
-const getChart = async (userId: number) => {
+const getRegistrationPer5MinChart = async (userId: number) => {
 	const start = subMinutes(new Date(), 30);
 
 	const user = await db.user.findFirst({
@@ -114,9 +114,53 @@ const getChart = async (userId: number) => {
 	}));
 };
 
+const getTotalAllMember = async (userId: number) => {
+	const user = await db.user.findFirst({
+		where: { id: userId, deletedAt: null },
+		select: {
+			provinceId: true,
+			cityId: true,
+			districtId: true,
+			villageId: true,
+		}
+	});
+
+	if (!user) {
+		throw new Error("User not found");
+	}
+
+	let filterField: "villageId" | "districtId" | "cityId" | "provinceId" | undefined;
+	let filterValue: number | undefined;
+
+	if (user.villageId) {
+		filterField = "villageId";
+		filterValue = user.villageId;
+	} else if (user.districtId) {
+		filterField = "districtId";
+		filterValue = user.districtId;
+	} else if (user.cityId) {
+		filterField = "cityId";
+		filterValue = user.cityId;
+	} else if (user.provinceId) {
+		filterField = "provinceId";
+		filterValue = user.provinceId;
+	}
+
+	const totalAll = await db.member.count({
+		where: {
+			deletedAt: null,
+			...(filterField && filterValue ? { [filterField]: filterValue } : {})
+		}
+	});
+
+	return { totalAll };
+};
+
+
 const dashboardService = {
-	getSummary,
-	getChart
+	getTotalMemberToday,
+	getRegistrationPer5MinChart,
+	getTotalAllMember
 };
 
 export default dashboardService;
