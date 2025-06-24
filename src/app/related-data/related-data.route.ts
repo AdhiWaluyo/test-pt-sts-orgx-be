@@ -1,10 +1,8 @@
 import express from 'express';
-import { authMiddleware } from '@/middlewares/auth.middleware';
 import relatedDataController from './related-data.controller';
 
 const relatedDataRoutes = express
-	.Router()
-	.use(authMiddleware);
+	.Router();
 
 relatedDataRoutes
 	.route('/roles')
