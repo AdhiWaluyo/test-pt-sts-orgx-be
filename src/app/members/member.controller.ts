@@ -7,7 +7,7 @@ import { AuthenticatedRequest } from "general.type";
 
 const list = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const { members, meta } = await memberService.list(req.query);
+		const { members, meta } = await memberService.list(req.user?.id as number, req.query);
 
 		res.status(HttpStatusCode.Ok).json({
 			message: messages.success,

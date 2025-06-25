@@ -1,4 +1,4 @@
-import roleEnum from "@/enums/role.enum";
+import { roleEnum } from "@/enums/role.enum";
 
 export const calculatePagination = (rawPage: string, rawPerPage: string) => {
 	let page = parseInt(rawPage, 10);

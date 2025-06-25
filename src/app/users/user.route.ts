@@ -3,7 +3,7 @@ import { createUserValidation, updateUserValidation } from './user.validation';
 import userController from './user.controller';
 import { authMiddleware } from '@/middlewares/auth.middleware';
 import { roleMiddleware } from '@/middlewares/role-middleware';
-import roleEnum from '@/enums/role.enum';
+import { roleEnum } from "@/enums/role.enum";
 
 // Routes
 const userRoutes = express

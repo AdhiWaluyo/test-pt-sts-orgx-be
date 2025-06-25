@@ -33,35 +33,53 @@ const list = async (req: AuthenticatedRequest, res: Response) => {
 
 const exportFile = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const level = (req.query.level as string) || "province";
 
-		const result = await recapitulationService.getWilayahSummaryByUser(req.user?.id as number, req.query);
+		const result = await recapitulationService.list(
+			req.user?.id as number,
+			req.query,
+			req.query.regionId ? Number(req.query.regionId) : undefined,
+			req.query.regionType ? Number(req.query.regionType) : undefined,
+		);
 
 		let exportData: any[] = [];
 
-		if (level === "village") {
-			// Detail format untuk kelurahan
-			exportData = result.data.map((item: any) => ({
-				Nama: item.name,
-				NIK: item.nik,
-				"No. HP": item.phone,
-				Provinsi: item.province?.name,
-				Kabupaten: item.city?.name,
-				Kecamatan: item.district?.name,
-				Kelurahan: item.village?.name,
-				"Tanggal Daftar": new Date(item.createdAt).toLocaleDateString("id-ID")
-			}));
-		} else {
-			// Format rekap summary untuk wilayah
-			exportData = result.data.map((item: any) => ({
-				No: item.no,
-				"Nama Wilayah": item.name,
-				"Total Anggota": item.total
-			}));
-		}
+		exportData = result.members.map((item: any) => ({
+			No: item.no,
+			Nama: item.name,
+			NIK: item.nik,
+			"No. HP": item.phone,
+			Provinsi: item.province?.name,
+			Kabupaten: item.city?.name,
+			Kecamatan: item.district?.name,
+			Kelurahan: item.village?.name,
+			"Tanggal Daftar": new Date(item.createdAt).toLocaleDateString("id-ID")
+		}));
+
+		// if (level === "village") {
+		// 	// Detail format untuk kelurahan
+		// 	exportData = result.data.map((item: any) => ({
+		// 		Nama: item.name,
+		// 		NIK: item.nik,
+		// 		"No. HP": item.phone,
+		// 		Provinsi: item.province?.name,
+		// 		Kabupaten: item.city?.name,
+		// 		Kecamatan: item.district?.name,
+		// 		Kelurahan: item.village?.name,
+		// 		"Tanggal Daftar": new Date(item.createdAt).toLocaleDateString("id-ID")
+		// 	}));
+		// } else {
+		// 	// Format rekap summary untuk wilayah
+		// 	exportData = result.data.map((item: any) => ({
+		// 		No: item.no,
+		// 		"Nama Wilayah": item.name,
+		// 		"Total Anggota": item.total
+		// 	}));
+		// }
 
 		// Export ke Excel
-		await exportToExcel(res, `rekap-${level}`, exportData);
+		// await exportToExcel(res, `rekap-${level}`, exportData);
+
+		await exportToExcel(res, `rekap-wilayah`, exportData);
 
 	} catch (error) {
 		console.error(error);

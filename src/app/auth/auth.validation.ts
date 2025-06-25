@@ -1,7 +1,7 @@
 import { body, FieldValidationError, validationResult } from "express-validator";
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import db from "@/utils/db.server";
-import regionEnum from "@/enums/region.enum";
+import { regionEnum } from "@/enums/region.enum";
 import { validateRegionByRole } from "@/utils/helper";
 
 // Login Validation

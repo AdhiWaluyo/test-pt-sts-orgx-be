@@ -1,5 +1,5 @@
 import db from "@/utils/db.server";
-import regionEnum from "@/enums/region.enum";
+import { regionEnum } from "@/enums/region.enum";
 
 const regionSeeder = async () => {
 	// --- Province ---

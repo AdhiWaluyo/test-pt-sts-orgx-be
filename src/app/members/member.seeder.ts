@@ -1,4 +1,4 @@
-import regionEnum from "@/enums/region.enum";
+import { regionEnum } from "@/enums/region.enum";
 import db from "@/utils/db.server";
 import { faker } from "@faker-js/faker";
 

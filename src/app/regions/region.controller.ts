@@ -4,7 +4,7 @@ import { messages } from "@/lang";
 import { HttpStatusCode } from "@/enums/http-status-code.enum";
 import { transformRegion } from "./region.transformer";
 import { AuthenticatedRequest } from "general.type";
-import regionEnum from "@/enums/region.enum";
+import { regionEnum } from "@/enums/region.enum";
 
 const listProvinsi = async (req: AuthenticatedRequest, res: Response) => {
 	try {

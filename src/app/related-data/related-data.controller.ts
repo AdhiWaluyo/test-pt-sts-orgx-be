@@ -4,7 +4,7 @@ import { HttpStatusCode } from "@/enums/http-status-code.enum";
 import { AuthenticatedRequest } from "general.type";
 import reletedDataService from "./related-data.service";
 import { transformRelatedData, transformRelatedDataRegion } from "./related-data.transformer";
-import regionEnum from "@/enums/region.enum";
+import { regionEnum } from "@/enums/region.enum";
 
 const listRoles = async (req: AuthenticatedRequest, res: Response) => {
 	try {
