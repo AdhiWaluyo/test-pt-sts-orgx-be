@@ -21,5 +21,6 @@ export const transformRelatedDataRegion = (relatedDataRegion: any) => {
 		cityId: relatedDataRegion.cityId,
 		districtId: relatedDataRegion.districtId,
 		villageId: relatedDataRegion.villageId,
+		children: relatedDataRegion.children?.map(transformRelatedDataRegion) ?? [],
 	}
 }

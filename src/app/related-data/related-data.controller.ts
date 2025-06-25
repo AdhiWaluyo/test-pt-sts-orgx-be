@@ -2,13 +2,13 @@ import { Response } from "express";
 import { messages } from "@/lang";
 import { HttpStatusCode } from "@/enums/http-status-code.enum";
 import { AuthenticatedRequest } from "general.type";
-import reletedDataService from "./related-data.service";
+import relatedDataService from "./related-data.service";
 import { transformRelatedData, transformRelatedDataRegion } from "./related-data.transformer";
 import { regionEnum } from "@/enums/region.enum";
 
 const listRoles = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const { roles, meta } = await reletedDataService.listRoles(req.query);
+		const { roles, meta } = await relatedDataService.listRoles(req.query);
 
 		const transformedRole = roles.map(transformRelatedData);
 
@@ -28,7 +28,7 @@ const listRoles = async (req: AuthenticatedRequest, res: Response) => {
 
 const listRegionProvinces = async (req: AuthenticatedRequest, res: Response) => {
 	try {
-		const { regions, meta } = await reletedDataService.listRegionProvinces(req.query);
+		const { regions, meta } = await relatedDataService.listRegionProvinces(req.query);
 
 		const transformedProvince = regions.map(transformRelatedDataRegion);
 
@@ -55,7 +55,7 @@ const listRegionCities = async (req: AuthenticatedRequest, res: Response) => {
 			return;
 		}
 
-		const { regions, meta } = await reletedDataService.listRegionByType(regionEnum.CITY, req.query, { provinceId: Number(provinceId) });
+		const { regions, meta } = await relatedDataService.listRegionByType(regionEnum.CITY, req.query, { provinceId: Number(provinceId) });
 
 		const transformedCity = regions.map(transformRelatedDataRegion);
 
@@ -79,7 +79,7 @@ const listRegionDistrict = async (req: AuthenticatedRequest, res: Response) => {
 			return;
 		}
 
-		const { regions, meta } = await reletedDataService.listRegionByType(regionEnum.DISTRICT, req.query, { cityId: Number(cityId) });
+		const { regions, meta } = await relatedDataService.listRegionByType(regionEnum.DISTRICT, req.query, { cityId: Number(cityId) });
 
 		const transformedDistrict = regions.map(transformRelatedDataRegion);
 
@@ -103,7 +103,7 @@ const listRegionVillages = async (req: AuthenticatedRequest, res: Response) => {
 			return;
 		}
 
-		const { regions, meta } = await reletedDataService.listRegionByType(regionEnum.VILLAGE, req.query, { districtId: Number(districtId) });
+		const { regions, meta } = await relatedDataService.listRegionByType(regionEnum.VILLAGE, req.query, { districtId: Number(districtId) });
 
 		const transformedVillage = regions.map(transformRelatedDataRegion);
 
@@ -118,12 +118,41 @@ const listRegionVillages = async (req: AuthenticatedRequest, res: Response) => {
 	}
 };
 
+const getRegionByIdAndType = async (req: AuthenticatedRequest, res: Response) => {
+	try {
+		const { id, type } = req.query;
+
+		if (!id) {
+			res.status(HttpStatusCode.BadRequest).json({ message: 'id is required' });
+			return;
+		}
+
+		if (!type) {
+			res.status(HttpStatusCode.BadRequest).json({ message: 'type is required' });
+			return;
+		}
+
+		const region = await relatedDataService.getRegionWithDirectChildren(Number(id), Number(type));
+
+		const transformedRegion = transformRelatedDataRegion(region);
+
+		res.status(HttpStatusCode.Ok).json({
+			message: messages.success,
+			data: transformedRegion,
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(HttpStatusCode.InternalServerError).json({ message: messages.httpInternalServerError });
+	}
+};
+
 const relatedDataController = {
 	listRoles,
 	listRegionProvinces,
 	listRegionCities,
 	listRegionDistrict,
-	listRegionVillages
+	listRegionVillages,
+	getRegionByIdAndType
 }
 
 export default relatedDataController; 

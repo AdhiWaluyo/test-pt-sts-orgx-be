@@ -142,11 +142,149 @@ const listRegionByType = async (
 	return { regions, meta };
 };
 
+const getRegionByIdAndType = async (id: number, type: number) => {
+	const region = await db.region.findFirst({
+		where: {
+			id,
+			type
+		},
+		select: {
+			id: true,
+			name: true,
+			type: true,
+			provinceId: true,
+			cityId: true,
+			districtId: true,
+		}
+	});
 
-const reletedDataService = {
-	listRoles,
-	listRegionProvinces,
-	listRegionByType
+	return region;
 };
 
-export default reletedDataService;
+// const getRegionTree = async (id: number, type: number) => {
+// 	// Get parent region
+// 	const parent = await db.region.findFirst({
+// 		where: { id, type, deletedAt: null },
+// 		select: {
+// 			id: true,
+// 			name: true,
+// 			type: true,
+// 		},
+// 	});
+
+// 	if (!parent) {
+// 		throw new Error("Region not found");
+// 	}
+
+// 	// Get children with recursive
+// 	const buildChildren = async (parentId: number, parentType: number): Promise<any[]> => {
+// 		let childType: number | undefined;
+// 		let where: any = { deletedAt: null };
+
+// 		if (parentType === regionEnum.PROVINCE) {
+// 			childType = regionEnum.CITY;
+// 			where = { provinceId: parentId, type: childType, deletedAt: null };
+// 		} else if (parentType === regionEnum.CITY) {
+// 			childType = regionEnum.DISTRICT;
+// 			where = { cityId: parentId, type: childType, deletedAt: null };
+// 		} else if (parentType === regionEnum.DISTRICT) {
+// 			childType = regionEnum.VILLAGE;
+// 			where = { districtId: parentId, type: childType, deletedAt: null };
+// 		} else {
+// 			// village tidak ada children
+// 			return [];
+// 		}
+
+// 		const children = await db.region.findMany({
+// 			where,
+// 			select: {
+// 				id: true,
+// 				name: true,
+// 				type: true,
+// 			},
+// 		});
+
+// 		// Untuk setiap child, ambil lagi children-nya
+// 		const withChildren = await Promise.all(
+// 			children.map(async (child) => ({
+// 				...child,
+// 				children: await buildChildren(child.id, child.type),
+// 			}))
+// 		);
+
+// 		return withChildren;
+// 	};
+
+// 	const result = {
+// 		id: parent.id,
+// 		name: parent.name,
+// 		type: parent.type,
+// 		children: await buildChildren(parent.id, parent.type),
+// 	};
+
+// 	return result;
+// };
+
+const getRegionWithDirectChildren = async (id: number, type: number) => {
+	// Get parent region
+	const parent = await db.region.findFirst({
+		where: { id, type, deletedAt: null },
+		select: {
+			id: true,
+			name: true,
+			type: true,
+		},
+	});
+
+	if (!parent) {
+		throw new Error("Region not found");
+	}
+
+	let childType: number | undefined;
+	let where: any = { deletedAt: null };
+
+	if (type === regionEnum.PROVINCE) {
+		childType = regionEnum.CITY;
+		where = { provinceId: id, type: childType, deletedAt: null };
+	} else if (type === regionEnum.CITY) {
+		childType = regionEnum.DISTRICT;
+		where = { cityId: id, type: childType, deletedAt: null };
+	} else if (type === regionEnum.DISTRICT) {
+		childType = regionEnum.VILLAGE;
+		where = { districtId: id, type: childType, deletedAt: null };
+	} else {
+		// Village does not have children
+		childType = undefined;
+	}
+
+	let children: any[] | null = null;
+
+	if (childType) {
+		children = await db.region.findMany({
+			where,
+			select: {
+				id: true,
+				name: true,
+				type: true,
+			},
+		});
+	}
+
+	return {
+		id: parent.id,
+		name: parent.name,
+		type: parent.type,
+		children: children && children.length > 0 ? children : null,
+	};
+};
+
+
+const relatedDataService = {
+	listRoles,
+	listRegionProvinces,
+	listRegionByType,
+	getRegionByIdAndType,
+	getRegionWithDirectChildren
+};
+
+export default relatedDataService;

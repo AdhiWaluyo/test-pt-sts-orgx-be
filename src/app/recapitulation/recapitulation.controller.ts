@@ -43,8 +43,8 @@ const exportFile = async (req: AuthenticatedRequest, res: Response) => {
 
 		let exportData: any[] = [];
 
-		exportData = result.members.map((item: any) => ({
-			No: item.no,
+		exportData = result.members.map((item: any, index: number) => ({
+			No: index + 1,
 			Nama: item.name,
 			NIK: item.nik,
 			"No. HP": item.phone,

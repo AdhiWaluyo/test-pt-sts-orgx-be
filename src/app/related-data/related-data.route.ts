@@ -24,4 +24,8 @@ relatedDataRoutes
 	.route('/villages')
 	.get(relatedDataController.listRegionVillages);
 
+relatedDataRoutes
+	.route('/regions')
+	.get(relatedDataController.getRegionByIdAndType);
+
 export default relatedDataRoutes;
